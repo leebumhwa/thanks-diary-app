@@ -5,9 +5,11 @@ import DiaryCard from '../components/DiaryCard'
 import DiaryForm from '../components/DiaryForm'
 import Header from '../components/Header'
 import PinSettings from '../components/PinSettings'
+import TodoPage from './TodoPage'
 
 export default function HomePage({ pinHook }) {
   const { user } = useAuth()
+  const [currentTab, setCurrentTab] = useState('diary')
   const [entries, setEntries] = useState([])
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
@@ -58,9 +60,15 @@ export default function HomePage({ pinHook }) {
 
   return (
     <div className="app-layout">
-      <Header onPinSettings={() => setShowPinSettings(true)} />
+      <Header
+        onPinSettings={() => setShowPinSettings(true)}
+        currentTab={currentTab}
+        onTabChange={setCurrentTab}
+      />
 
-      <main className="main-content">
+      {currentTab === 'todo' && <TodoPage />}
+
+      <main className="main-content" style={{ display: currentTab === 'diary' ? undefined : 'none' }}>
         <div className="toolbar">
           <input
             type="text"
