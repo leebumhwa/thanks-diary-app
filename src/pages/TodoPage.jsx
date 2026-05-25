@@ -1,9 +1,12 @@
 import { useState, useEffect, useRef } from 'react'
+import { supabase } from '../lib/supabase'
+import { useAuth } from '../contexts/AuthContext'
 
 const CATEGORY_LABEL = { work: '업무', personal: '개인', study: '공부' }
+const CATEGORY_ICON  = { work: '💼', personal: '🙋', study: '📚' }
 const CATEGORIES = ['work', 'personal', 'study']
 
-const CATEGORY_KEYWORDS = {
+const DEFAULT_KEYWORDS = {
   work: [
     '회의', '보고서', '기획', '발표', '미팅', '업무', '출장', '계약', '프로젝트',
     '거래처', '이메일', '제안서', '검토', '결재', '예산', '마감', '클라이언트',
@@ -21,22 +24,36 @@ const CATEGORY_KEYWORDS = {
   ],
 }
 
-function detectCategory(text) {
-  for (const [cat, keywords] of Object.entries(CATEGORY_KEYWORDS)) {
-    if (keywords.some(kw => text.includes(kw))) return cat
+function detectCategory(text, custom = {}) {
+  for (const cat of CATEGORIES) {
+    const all = [...DEFAULT_KEYWORDS[cat], ...(custom[cat] || [])]
+    if (all.some(kw => text.includes(kw))) return cat
   }
   return null
 }
 
-function loadTodos() {
+function loadCustomKeywords() {
   try {
-    const data = JSON.parse(localStorage.getItem('todo_app_data'))
-    return Array.isArray(data?.todos) ? data.todos : []
-  } catch { return [] }
+    const data = JSON.parse(localStorage.getItem('todo_keywords'))
+    if (data && CATEGORIES.every(c => Array.isArray(data[c]))) return data
+  } catch {}
+  return { work: [], personal: [], study: [] }
+}
+
+function dbToTodo(r) {
+  return {
+    id: r.id,
+    text: r.text,
+    category: r.category,
+    completed: r.completed,
+    createdAt: new Date(r.created_at).getTime(),
+  }
 }
 
 export default function TodoPage() {
-  const [todos, setTodos] = useState(loadTodos)
+  const { user } = useAuth()
+  const [todos, setTodos] = useState([])
+  const [loading, setLoading] = useState(true)
   const [input, setInput] = useState('')
   const [category, setCategory] = useState('work')
   const [filter, setFilter] = useState('all')
@@ -45,11 +62,27 @@ export default function TodoPage() {
   const [shake, setShake] = useState(false)
   const [autoDetected, setAutoDetected] = useState(false)
   const [userOverrode, setUserOverrode] = useState(false)
+  const [customKeywords, setCustomKeywords] = useState(loadCustomKeywords)
+  const [showKeywords, setShowKeywords] = useState(false)
+  const [kwInput, setKwInput] = useState({ work: '', personal: '', study: '' })
   const inputRef = useRef()
 
   useEffect(() => {
-    localStorage.setItem('todo_app_data', JSON.stringify({ todos }))
-  }, [todos])
+    if (!user) return
+    setLoading(true)
+    supabase
+      .from('todos')
+      .select('*')
+      .order('created_at', { ascending: true })
+      .then(({ data, error }) => {
+        if (!error && data) setTodos(data.map(dbToTodo))
+        setLoading(false)
+      })
+  }, [user])
+
+  useEffect(() => {
+    localStorage.setItem('todo_keywords', JSON.stringify(customKeywords))
+  }, [customKeywords])
 
   const triggerShake = () => {
     setShake(true)
@@ -57,38 +90,49 @@ export default function TodoPage() {
     inputRef.current?.focus()
   }
 
-  const addTodo = () => {
+  const addTodo = async () => {
     if (!input.trim()) { triggerShake(); return }
-    setTodos(prev => [...prev, {
-      id: crypto.randomUUID(),
-      text: input.trim(),
-      category,
-      completed: false,
-      createdAt: Date.now(),
-    }])
+    const { data, error } = await supabase
+      .from('todos')
+      .insert({ user_id: user.id, text: input.trim(), category, completed: false })
+      .select()
+      .single()
+    if (error) { alert('추가 실패: ' + error.message); return }
+    setTodos(prev => [...prev, dbToTodo(data)])
     setInput('')
     setAutoDetected(false)
     setUserOverrode(false)
     inputRef.current?.focus()
   }
 
-  const toggleTodo = (id) =>
-    setTodos(prev => prev.map(t => t.id === id ? { ...t, completed: !t.completed } : t))
+  const toggleTodo = async (id) => {
+    const t = todos.find(t => t.id === id)
+    if (!t) return
+    const { error } = await supabase.from('todos').update({ completed: !t.completed }).eq('id', id)
+    if (!error) setTodos(prev => prev.map(t => t.id === id ? { ...t, completed: !t.completed } : t))
+  }
 
-  const deleteTodo = (id) =>
-    setTodos(prev => prev.filter(t => t.id !== id))
+  const deleteTodo = async (id) => {
+    const { error } = await supabase.from('todos').delete().eq('id', id)
+    if (!error) setTodos(prev => prev.filter(t => t.id !== id))
+  }
 
-  const clearCompleted = () =>
-    setTodos(prev => prev.filter(t => !t.completed))
+  const clearCompleted = async () => {
+    const ids = todos.filter(t => t.completed).map(t => t.id)
+    if (!ids.length) return
+    const { error } = await supabase.from('todos').delete().in('id', ids)
+    if (!error) setTodos(prev => prev.filter(t => !t.completed))
+  }
 
   const startEdit = (todo) => {
     setEditId(todo.id)
     setEditText(todo.text)
   }
 
-  const commitEdit = () => {
-    if (editText.trim()) {
-      setTodos(prev => prev.map(t => t.id === editId ? { ...t, text: editText.trim() } : t))
+  const commitEdit = async () => {
+    if (editText.trim() && editId) {
+      const { error } = await supabase.from('todos').update({ text: editText.trim() }).eq('id', editId)
+      if (!error) setTodos(prev => prev.map(t => t.id === editId ? { ...t, text: editText.trim() } : t))
     }
     setEditId(null)
     setEditText('')
@@ -97,6 +141,19 @@ export default function TodoPage() {
   const cancelEdit = () => {
     setEditId(null)
     setEditText('')
+  }
+
+  const addKeyword = (cat) => {
+    const kw = kwInput[cat].trim()
+    if (!kw) return
+    const exists = DEFAULT_KEYWORDS[cat].includes(kw) || customKeywords[cat].includes(kw)
+    if (exists) return
+    setCustomKeywords(prev => ({ ...prev, [cat]: [...prev[cat], kw] }))
+    setKwInput(prev => ({ ...prev, [cat]: '' }))
+  }
+
+  const removeKeyword = (cat, kw) => {
+    setCustomKeywords(prev => ({ ...prev, [cat]: prev[cat].filter(k => k !== kw) }))
   }
 
   const filtered = filter === 'all' ? todos : todos.filter(t => t.category === filter)
@@ -108,6 +165,8 @@ export default function TodoPage() {
   const today = new Date().toLocaleDateString('ko-KR', {
     year: 'numeric', month: 'long', day: 'numeric', weekday: 'long',
   })
+
+  if (loading) return <div style={{ textAlign: 'center', padding: '60px', color: '#718096' }}>불러오는 중...</div>
 
   return (
     <div className="todo-page">
@@ -161,7 +220,7 @@ export default function TodoPage() {
               const val = e.target.value
               setInput(val)
               if (!userOverrode) {
-                const detected = detectCategory(val)
+                const detected = detectCategory(val, customKeywords)
                 if (detected) { setCategory(detected); setAutoDetected(true) }
                 else setAutoDetected(false)
               }
@@ -182,6 +241,9 @@ export default function TodoPage() {
           </div>
           <button className="todo-add-btn" onClick={addTodo}>+ 추가</button>
         </div>
+        <button className="todo-kw-link" onClick={() => setShowKeywords(true)}>
+          ⚙️ 자동 분류 키워드 설정
+        </button>
       </div>
 
       {/* 필터 탭 */}
@@ -243,6 +305,53 @@ export default function TodoPage() {
           {filter === 'all' ? '총' : CATEGORY_LABEL[filter]} {filtered.length}개
         </span>
       </div>
+
+      {/* 키워드 설정 모달 */}
+      {showKeywords && (
+        <div className="modal-overlay" onClick={() => setShowKeywords(false)}>
+          <div className="modal-card kw-modal" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>⚙️ 자동 분류 키워드 설정</h2>
+              <button className="close-btn" onClick={() => setShowKeywords(false)}>✕</button>
+            </div>
+            <div className="kw-modal-body">
+              {CATEGORIES.map(cat => (
+                <div key={cat} className="kw-section">
+                  <div className="kw-section-header">
+                    <span className={`todo-cat-badge todo-cat-${cat}`}>
+                      {CATEGORY_ICON[cat]} {CATEGORY_LABEL[cat]}
+                    </span>
+                    <span className="kw-default-count">기본 {DEFAULT_KEYWORDS[cat].length}개 포함</span>
+                  </div>
+
+                  {customKeywords[cat].length > 0 && (
+                    <div className="kw-chips">
+                      {customKeywords[cat].map(kw => (
+                        <span key={kw} className="kw-chip">
+                          {kw}
+                          <button className="kw-chip-del" onClick={() => removeKeyword(cat, kw)}>×</button>
+                        </span>
+                      ))}
+                    </div>
+                  )}
+
+                  <div className="kw-add-row">
+                    <input
+                      type="text"
+                      className="kw-add-input"
+                      placeholder="새 키워드 입력"
+                      value={kwInput[cat]}
+                      onChange={e => setKwInput(prev => ({ ...prev, [cat]: e.target.value }))}
+                      onKeyDown={e => e.key === 'Enter' && addKeyword(cat)}
+                    />
+                    <button className={`kw-add-btn kw-add-${cat}`} onClick={() => addKeyword(cat)}>+ 추가</button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
