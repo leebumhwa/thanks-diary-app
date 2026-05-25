@@ -799,10 +799,6 @@
 
   let currentUser = null
 
-  function userStorageKey(base) {
-    return currentUser ? `${base}_${currentUser.id}` : base
-  }
-
   function showAuthTab(tab) {
     document.getElementById('tab-login').classList.toggle('active',  tab === 'login')
     document.getElementById('tab-signup').classList.toggle('active', tab === 'signup')
@@ -844,15 +840,16 @@
     await sb.auth.signOut()
   }
 
-  function onAuthReady(user) {
+  async function onAuthReady(user) {
     currentUser = user
     if (user) {
       document.getElementById('auth-overlay').classList.add('hidden')
       document.getElementById('sb-user').style.display = 'flex'
       document.getElementById('sb-user-email').textContent = user.email
-      loadState()
+      await loadState()
       document.dispatchEvent(new Event('appReady'))
     } else {
+      diaries = []; todos = []
       document.getElementById('auth-overlay').classList.remove('hidden')
       document.getElementById('sb-user').style.display = 'none'
     }
@@ -893,16 +890,26 @@
   let calMonth     = new Date().getMonth()
   let dayDetailDate = null
 
+  // ── DB Mappers ─────────────────────────────────────────────────────────
+  function dbToDiary(r) {
+    return { id: r.id, date: r.date, mood: r.mood || '😊', content: r.content || '', thanks: r.thanks || ['','',''], createdAt: new Date(r.created_at).getTime() }
+  }
+  function dbToTodo(r) {
+    return { id: r.id, text: r.text, category: r.category, completed: r.completed, dueDate: r.due_date || null, createdAt: new Date(r.created_at).getTime() }
+  }
+
   // ── Persistence ────────────────────────────────────────────────────────
-  function loadState() {
-    try { diaries  = JSON.parse(localStorage.getItem(userStorageKey('web_diary_entries')) || '[]') } catch {}
-    try { const d = JSON.parse(localStorage.getItem(userStorageKey('todo_app_data'))); if (Array.isArray(d?.todos)) todos = d.todos } catch {}
-    try { const d = JSON.parse(localStorage.getItem(userStorageKey('todo_keywords')));  if (d && CATS.every(c=>Array.isArray(d[c]))) customKw = d } catch {}
+  async function loadState() {
+    const [dr, tr] = await Promise.all([
+      sb.from('diary_entries').select('*').order('date', { ascending: false }),
+      sb.from('todos').select('*').order('created_at', { ascending: true })
+    ])
+    if (!dr.error && dr.data) diaries = dr.data.map(dbToDiary)
+    if (!tr.error && tr.data) todos   = tr.data.map(dbToTodo)
+    try { const d = JSON.parse(localStorage.getItem('kw_' + currentUser?.id)); if (d && CATS.every(c=>Array.isArray(d[c]))) customKw = d } catch {}
     dark = localStorage.getItem('theme') === 'dark'
   }
-  function saveDiaries() { localStorage.setItem(userStorageKey('web_diary_entries'), JSON.stringify(diaries)) }
-  function saveTodos()   { localStorage.setItem(userStorageKey('todo_app_data'), JSON.stringify({ todos })); updateSbStats() }
-  function saveKw()      { localStorage.setItem(userStorageKey('todo_keywords'), JSON.stringify(customKw)) }
+  function saveKw() { localStorage.setItem('kw_' + currentUser?.id, JSON.stringify(customKw)) }
 
   // ── Util ───────────────────────────────────────────────────────────────
   function esc(s) {
@@ -1089,7 +1096,7 @@
 
     const DOW = ['일','월','화','수','목','금','토']
     const headers = DOW.map((d,i) =>
-      `<div class="cal-dh${i===0?' sun':i===6?' sat':''}">${d}</div>`
+      `<div class="cal-dh${i===0?' sun':i===6?' sat':''}">$d}</div>`
     ).join('')
 
     const cellsHtml = cells.map((c, i) => {
@@ -1164,11 +1171,8 @@
     dayDetailDate = null
   }
 
-  function toggleTodoFromDay(id) {
-    todos = todos.map(t => t.id === id ? {...t, completed: !t.completed} : t)
-    saveTodos()
-    renderTodoPage()
-    renderCalendar()
+  async function toggleTodoFromDay(id) {
+    await toggleTodo(id)
     if (dayDetailDate) refreshDayDetail()
   }
 
@@ -1249,22 +1253,31 @@
     document.getElementById('diary-modal').classList.add('hidden')
     editDiaryId = null
   }
-  function saveDiary() {
+  async function saveDiary() {
     const date    = document.getElementById('f-date').value
     const content = document.getElementById('f-content').value.trim()
     const thanks  = [0,1,2].map(i => document.getElementById('f-t'+i).value.trim())
+    const mood    = selMood || '😊'
     if (!date) return
     if (editDiaryId) {
-      diaries = diaries.map(e => e.id===editDiaryId ? {...e, date, content, thanks, mood:selMood} : e)
+      const { error } = await sb.from('diary_entries').update({ date, mood, content, thanks }).eq('id', editDiaryId)
+      if (error) { alert('저장 실패: ' + error.message); return }
+      diaries = diaries.map(e => e.id === editDiaryId ? {...e, date, mood, content, thanks} : e)
     } else {
-      diaries.push({ id:crypto.randomUUID(), date, content, thanks, mood:selMood, createdAt:Date.now() })
+      const { data, error } = await sb.from('diary_entries')
+        .insert({ user_id: currentUser.id, date, mood, content, thanks })
+        .select().single()
+      if (error) { alert('저장 실패: ' + error.message); return }
+      diaries.unshift(dbToDiary(data))
     }
-    saveDiaries(); renderDiaryPage(); updateSbStats(); closeDiaryForm()
+    renderDiaryPage(); updateSbStats(); closeDiaryForm()
   }
-  function delDiary(id) {
+  async function delDiary(id) {
     if (!confirm('정말 삭제하시겠습니까?')) return
+    const { error } = await sb.from('diary_entries').delete().eq('id', id)
+    if (error) { alert('삭제 실패: ' + error.message); return }
     diaries = diaries.filter(e => e.id !== id)
-    saveDiaries(); renderDiaryPage(); updateSbStats()
+    renderDiaryPage(); updateSbStats()
   }
 
   // ── TODO ───────────────────────────────────────────────────────────────
@@ -1286,7 +1299,7 @@
     userOverrode = true
     document.getElementById('auto-badge').style.visibility = 'hidden'
   }
-  function addTodo() {
+  async function addTodo() {
     const inp  = document.getElementById('todo-inp')
     const text = inp.value.trim()
     if (!text) {
@@ -1294,41 +1307,55 @@
       setTimeout(() => inp.classList.remove('shake'), 500)
       return
     }
-    const dueDate = document.getElementById('todo-due').value || null
-    todos.push({
-      id: crypto.randomUUID(), text,
-      category: document.getElementById('cat-sel').value,
-      completed: false, createdAt: Date.now(), dueDate
-    })
+    const due_date = document.getElementById('todo-due').value || null
+    const category = document.getElementById('cat-sel').value
+    const { data, error } = await sb.from('todos')
+      .insert({ user_id: currentUser.id, text, category, completed: false, due_date })
+      .select().single()
+    if (error) { alert('추가 실패: ' + error.message); return }
+    todos.push(dbToTodo(data))
     inp.value = ''
     document.getElementById('todo-due').value = ''
     document.getElementById('auto-badge').style.visibility = 'hidden'
     userOverrode = false
     inp.focus()
-    saveTodos(); renderTodoPage(); renderCalendar()
+    renderTodoPage(); renderCalendar()
   }
-  function toggleTodo(id) {
-    todos = todos.map(t => t.id===id ? {...t, completed:!t.completed} : t)
-    saveTodos(); renderTodoPage(); renderCalendar()
+  async function toggleTodo(id) {
+    const t = todos.find(t => t.id === id); if (!t) return
+    const { error } = await sb.from('todos').update({ completed: !t.completed }).eq('id', id)
+    if (error) return
+    todos = todos.map(t => t.id === id ? {...t, completed: !t.completed} : t)
+    renderTodoPage(); renderCalendar()
   }
-  function delTodo(id) {
-    todos = todos.filter(t => t.id!==id)
-    saveTodos(); renderTodoPage(); renderCalendar()
+  async function delTodo(id) {
+    const { error } = await sb.from('todos').delete().eq('id', id)
+    if (error) { alert('삭제 실패: ' + error.message); return }
+    todos = todos.filter(t => t.id !== id)
+    renderTodoPage(); renderCalendar()
   }
   function startEdit(id) {
     editTodoId = id; renderTodoPage()
     const inp = document.getElementById('ei-'+id)
     if (inp) { inp.focus(); inp.select() }
   }
-  function commitEdit(id) {
+  async function commitEdit(id) {
     const inp = document.getElementById('ei-'+id)
-    if (inp?.value.trim()) todos = todos.map(t => t.id===id ? {...t, text:inp.value.trim()} : t)
-    editTodoId = null; saveTodos(); renderTodoPage()
+    const text = inp?.value.trim()
+    if (text) {
+      const { error } = await sb.from('todos').update({ text }).eq('id', id)
+      if (!error) todos = todos.map(t => t.id === id ? {...t, text} : t)
+    }
+    editTodoId = null; renderTodoPage()
   }
   function cancelEdit() { editTodoId = null; renderTodoPage() }
-  function clearDone() {
+  async function clearDone() {
+    const ids = todos.filter(t => t.completed).map(t => t.id)
+    if (!ids.length) return
+    const { error } = await sb.from('todos').delete().in('id', ids)
+    if (error) { alert('삭제 실패: ' + error.message); return }
     todos = todos.filter(t => !t.completed)
-    saveTodos(); renderTodoPage(); renderCalendar()
+    renderTodoPage(); renderCalendar()
   }
   function setFilter(f, btn) {
     todoFilter = f
