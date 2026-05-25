@@ -338,7 +338,12 @@ input, textarea, select { font: inherit }
 .todo-cat-fill-study    { background: var(--todo-study) }
 
 /* Input */
-.todo-input-area { display: flex; gap: 8px; flex-wrap: wrap }
+.todo-input-area { display: flex; gap: 8px; flex-wrap: wrap; align-items: flex-start }
+.todo-select-wrap { display: flex; flex-direction: column; align-items: center; gap: 3px }
+.todo-auto-badge {
+  font-size: 10px; font-weight: 700; color: var(--todo-study);
+  white-space: nowrap; letter-spacing: 0.02em;
+}
 .todo-text-input {
   flex: 1; min-width: 140px; padding: 10px 14px;
   border: 1.5px solid var(--border); border-radius: 10px;

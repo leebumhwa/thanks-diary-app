@@ -3,6 +3,31 @@ import { useState, useEffect, useRef } from 'react'
 const CATEGORY_LABEL = { work: '업무', personal: '개인', study: '공부' }
 const CATEGORIES = ['work', 'personal', 'study']
 
+const CATEGORY_KEYWORDS = {
+  work: [
+    '회의', '보고서', '기획', '발표', '미팅', '업무', '출장', '계약', '프로젝트',
+    '거래처', '이메일', '제안서', '검토', '결재', '예산', '마감', '클라이언트',
+    '고객', '팀장', '부장', '사장', '부서', '영업', '납기', '견적', '협의', '회사',
+  ],
+  personal: [
+    '운동', '병원', '쇼핑', '약속', '청소', '빨래', '요리', '친구', '가족',
+    '여행', '영화', '산책', '저녁', '점심', '아침', '약', '헬스', '미용실',
+    '장보기', '집안일', '데이트', '모임', '생일', '결혼식', '청첩장',
+  ],
+  study: [
+    '공부', '강의', '독서', '책', '시험', '과제', '학원', '수업', '인강',
+    '복습', '예습', '자격증', '토익', '영어', '프로그래밍', '코딩', '강좌',
+    '논문', '학습', '스터디', '튜토리얼', '문제풀이', '강습',
+  ],
+}
+
+function detectCategory(text) {
+  for (const [cat, keywords] of Object.entries(CATEGORY_KEYWORDS)) {
+    if (keywords.some(kw => text.includes(kw))) return cat
+  }
+  return null
+}
+
 function loadTodos() {
   try {
     const data = JSON.parse(localStorage.getItem('todo_app_data'))
@@ -18,6 +43,8 @@ export default function TodoPage() {
   const [editId, setEditId] = useState(null)
   const [editText, setEditText] = useState('')
   const [shake, setShake] = useState(false)
+  const [autoDetected, setAutoDetected] = useState(false)
+  const [userOverrode, setUserOverrode] = useState(false)
   const inputRef = useRef()
 
   useEffect(() => {
@@ -40,6 +67,8 @@ export default function TodoPage() {
       createdAt: Date.now(),
     }])
     setInput('')
+    setAutoDetected(false)
+    setUserOverrode(false)
     inputRef.current?.focus()
   }
 
@@ -128,18 +157,29 @@ export default function TodoPage() {
             className={`todo-text-input${shake ? ' todo-shake' : ''}`}
             placeholder="새로운 할 일을 입력하세요"
             value={input}
-            onChange={e => setInput(e.target.value)}
+            onChange={e => {
+              const val = e.target.value
+              setInput(val)
+              if (!userOverrode) {
+                const detected = detectCategory(val)
+                if (detected) { setCategory(detected); setAutoDetected(true) }
+                else setAutoDetected(false)
+              }
+            }}
             onKeyDown={e => e.key === 'Enter' && addTodo()}
           />
-          <select
-            className="todo-select"
-            value={category}
-            onChange={e => setCategory(e.target.value)}
-          >
-            <option value="work">💼 업무</option>
-            <option value="personal">🙋 개인</option>
-            <option value="study">📚 공부</option>
-          </select>
+          <div className="todo-select-wrap">
+            <select
+              className="todo-select"
+              value={category}
+              onChange={e => { setCategory(e.target.value); setUserOverrode(true); setAutoDetected(false) }}
+            >
+              <option value="work">💼 업무</option>
+              <option value="personal">🙋 개인</option>
+              <option value="study">📚 공부</option>
+            </select>
+            {autoDetected && <span className="todo-auto-badge">✨ 자동</span>}
+          </div>
           <button className="todo-add-btn" onClick={addTodo}>+ 추가</button>
         </div>
       </div>
