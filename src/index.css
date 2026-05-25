@@ -1,0 +1,261 @@
+/* ─── CSS Variables ─── */
+:root {
+  --bg: #f8f9fa;
+  --bg2: #ffffff;
+  --bg3: #f0f2f5;
+  --surface: #ffffff;
+  --border: #e2e8f0;
+  --text: #1a202c;
+  --text2: #4a5568;
+  --text3: #718096;
+  --primary: #6c63ff;
+  --primary-hover: #5a52d5;
+  --danger: #e53e3e;
+  --success: #38a169;
+  --radius: 12px;
+  --shadow: 0 2px 12px rgba(0,0,0,0.08);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.12);
+}
+
+.dark {
+  --bg: #0f1117;
+  --bg2: #1a1d27;
+  --bg3: #252836;
+  --surface: #1e2130;
+  --border: #2d3148;
+  --text: #f0f4ff;
+  --text2: #b0b8d8;
+  --text3: #7b85a8;
+  --primary: #7c72ff;
+  --primary-hover: #9088ff;
+  --shadow: 0 2px 12px rgba(0,0,0,0.3);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.4);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0 }
+body {
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  transition: background 0.2s, color 0.2s;
+}
+button { cursor: pointer; border: none; background: none; font: inherit }
+input, textarea, select { font: inherit }
+
+.splash {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  height: 100vh; gap: 12px; color: var(--text2);
+}
+.splash-logo { font-size: 64px }
+
+.auth-container {
+  display: flex; align-items: center; justify-content: center;
+  min-height: 100vh; padding: 24px; background: var(--bg);
+}
+.auth-card {
+  background: var(--surface); border-radius: 20px; padding: 48px 40px;
+  width: 100%; max-width: 400px; box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border);
+}
+.auth-logo { font-size: 52px; text-align: center; margin-bottom: 8px }
+.auth-title { text-align: center; font-size: 28px; font-weight: 700; color: var(--primary) }
+.auth-subtitle { text-align: center; color: var(--text3); margin: 6px 0 28px }
+.auth-form { display: flex; flex-direction: column; gap: 12px }
+.auth-input {
+  padding: 12px 16px; border: 1.5px solid var(--border);
+  border-radius: var(--radius); background: var(--bg3); color: var(--text);
+  outline: none; transition: border-color 0.2s;
+}
+.auth-input:focus { border-color: var(--primary) }
+.auth-btn {
+  padding: 13px; background: var(--primary); color: #fff;
+  border-radius: var(--radius); font-size: 15px; font-weight: 600;
+  transition: background 0.2s; margin-top: 4px;
+}
+.auth-btn:hover:not(:disabled) { background: var(--primary-hover) }
+.auth-btn:disabled { opacity: 0.6 }
+.auth-error { color: var(--danger); font-size: 13px; text-align: center }
+.auth-message { color: var(--success); font-size: 13px; text-align: center }
+.auth-toggle {
+  display: block; margin: 16px auto 0; color: var(--primary);
+  font-size: 14px; text-decoration: underline;
+}
+
+.app-layout { display: flex; flex-direction: column; min-height: 100vh }
+.main-content { flex: 1; max-width: 900px; width: 100%; margin: 0 auto; padding: 24px 20px }
+
+.app-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 24px; height: 60px; background: var(--surface);
+  border-bottom: 1px solid var(--border); box-shadow: var(--shadow); position: sticky; top: 0; z-index: 100;
+}
+.header-left { display: flex; align-items: center; gap: 10px }
+.header-logo { font-size: 28px }
+.header-title { font-size: 20px; font-weight: 700; color: var(--primary) }
+.header-right { display: flex; align-items: center; gap: 4px }
+.header-email { font-size: 13px; color: var(--text3); margin-left: 8px; display: none }
+@media (min-width: 640px) { .header-email { display: block } }
+.icon-btn {
+  width: 38px; height: 38px; border-radius: 8px; font-size: 18px;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s;
+}
+.icon-btn:hover { background: var(--bg3) }
+
+.toolbar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px }
+.search-input {
+  flex: 1; min-width: 160px; padding: 10px 14px;
+  border: 1.5px solid var(--border); border-radius: var(--radius);
+  background: var(--surface); color: var(--text); outline: none;
+  transition: border-color 0.2s;
+}
+.search-input:focus { border-color: var(--primary) }
+.mood-filter {
+  padding: 10px 12px; border: 1.5px solid var(--border);
+  border-radius: var(--radius); background: var(--surface); color: var(--text); outline: none;
+}
+.new-btn {
+  padding: 10px 18px; background: var(--primary); color: #fff;
+  border-radius: var(--radius); font-weight: 600; font-size: 14px;
+  transition: background 0.2s; white-space: nowrap;
+}
+.new-btn:hover { background: var(--primary-hover) }
+
+.entries-grid {
+  display: grid; gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+}
+.loading, .empty {
+  text-align: center; padding: 60px 20px; color: var(--text3); line-height: 2;
+}
+.empty p:first-child { font-size: 24px }
+
+.diary-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 16px; padding: 20px; box-shadow: var(--shadow);
+  transition: box-shadow 0.2s, transform 0.15s;
+}
+.diary-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px) }
+.card-header { display: flex; align-items: center; gap: 8px; margin-bottom: 12px }
+.card-mood { font-size: 28px }
+.card-date { flex: 1; font-size: 13px; color: var(--text3); font-weight: 500 }
+.card-actions { display: flex; gap: 4px }
+.action-btn {
+  width: 30px; height: 30px; border-radius: 8px; font-size: 16px;
+  display: flex; align-items: center; justify-content: center; transition: background 0.15s;
+}
+.action-btn:hover { background: var(--bg3) }
+.card-content { color: var(--text2); font-size: 14px; line-height: 1.7; margin-bottom: 12px; white-space: pre-wrap }
+.card-thanks { background: var(--bg3); border-radius: 10px; padding: 12px 14px; margin-bottom: 12px }
+.thanks-label { font-size: 13px; font-weight: 600; color: var(--primary); margin-bottom: 6px }
+.card-thanks ul { padding-left: 16px; display: flex; flex-direction: column; gap: 4px }
+.card-thanks li { font-size: 13px; color: var(--text2) }
+.card-image { margin-top: 12px; border-radius: 10px; overflow: hidden }
+.card-image img { width: 100%; height: 200px; object-fit: cover; display: block }
+
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 200; padding: 20px;
+  animation: fadeIn 0.15s ease;
+}
+@keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
+.modal-card {
+  background: var(--surface); border-radius: 20px; width: 100%; max-width: 540px;
+  max-height: 90vh; overflow-y: auto; box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border);
+  animation: slideUp 0.2s ease;
+}
+@keyframes slideUp { from { transform: translateY(20px); opacity: 0 } to { transform: translateY(0); opacity: 1 } }
+.modal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 24px; border-bottom: 1px solid var(--border); position: sticky; top: 0;
+  background: var(--surface);
+}
+.modal-header h2 { font-size: 18px; font-weight: 700 }
+.close-btn { font-size: 18px; color: var(--text3); padding: 4px 8px; border-radius: 6px }
+.close-btn:hover { background: var(--bg3) }
+
+.diary-form { padding: 20px 24px; display: flex; flex-direction: column; gap: 18px }
+.form-row { display: flex; flex-direction: column; gap: 8px }
+.form-row label { font-size: 13px; font-weight: 600; color: var(--text2) }
+.form-input {
+  padding: 10px 14px; border: 1.5px solid var(--border); border-radius: var(--radius);
+  background: var(--bg3); color: var(--text); outline: none; transition: border-color 0.2s;
+}
+.form-input:focus { border-color: var(--primary) }
+.form-textarea {
+  padding: 12px 14px; border: 1.5px solid var(--border); border-radius: var(--radius);
+  background: var(--bg3); color: var(--text); outline: none; resize: vertical;
+  transition: border-color 0.2s;
+}
+.form-textarea:focus { border-color: var(--primary) }
+.thanks-input { margin-top: 4px }
+.thanks-input:first-of-type { margin-top: 0 }
+.mood-grid { display: flex; flex-wrap: wrap; gap: 8px }
+.mood-btn {
+  width: 42px; height: 42px; font-size: 22px; border-radius: 10px;
+  border: 2px solid transparent; transition: all 0.15s;
+}
+.mood-btn:hover { background: var(--bg3); transform: scale(1.1) }
+.mood-btn.selected { border-color: var(--primary); background: var(--bg3); transform: scale(1.15) }
+.image-preview { position: relative; margin-bottom: 8px; border-radius: 10px; overflow: hidden }
+.image-preview img { width: 100%; max-height: 200px; object-fit: cover; display: block }
+.remove-img {
+  position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.5);
+  color: #fff; border-radius: 50%; width: 28px; height: 28px; font-size: 14px;
+  display: flex; align-items: center; justify-content: center;
+}
+.upload-btn {
+  padding: 10px 16px; border: 1.5px dashed var(--border); border-radius: var(--radius);
+  color: var(--text2); font-size: 14px; transition: all 0.2s; width: 100%;
+}
+.upload-btn:hover { border-color: var(--primary); color: var(--primary) }
+.form-error { color: var(--danger); font-size: 13px }
+.form-actions { display: flex; gap: 10px; justify-content: flex-end; padding-top: 4px }
+.btn-cancel {
+  padding: 10px 20px; border: 1.5px solid var(--border); border-radius: var(--radius);
+  color: var(--text2); font-size: 14px; font-weight: 600; transition: all 0.2s;
+}
+.btn-cancel:hover { background: var(--bg3) }
+.btn-save {
+  padding: 10px 24px; background: var(--primary); color: #fff;
+  border-radius: var(--radius); font-size: 14px; font-weight: 600; transition: background 0.2s;
+}
+.btn-save:hover:not(:disabled) { background: var(--primary-hover) }
+.btn-save:disabled { opacity: 0.6 }
+
+.pin-overlay {
+  position: fixed; inset: 0; background: var(--bg);
+  display: flex; align-items: center; justify-content: center; z-index: 300;
+}
+.pin-card {
+  background: var(--surface); border-radius: 24px; padding: 40px 32px;
+  width: 100%; max-width: 340px; text-align: center; box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border);
+}
+.pin-icon { font-size: 48px; margin-bottom: 12px }
+.pin-title { font-size: 22px; font-weight: 700; margin-bottom: 6px }
+.pin-sub { color: var(--text3); font-size: 14px; margin-bottom: 24px }
+.pin-dots { display: flex; justify-content: center; gap: 14px; margin-bottom: 16px }
+.pin-dot {
+  width: 16px; height: 16px; border-radius: 50%;
+  border: 2px solid var(--border); background: transparent; transition: all 0.15s;
+}
+.pin-dot.filled { background: var(--primary); border-color: var(--primary) }
+.pin-error { color: var(--danger); font-size: 13px; margin-bottom: 12px }
+.pin-keypad {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 20px;
+}
+.pin-key {
+  height: 64px; font-size: 22px; font-weight: 600; border-radius: 14px;
+  background: var(--bg3); color: var(--text); transition: all 0.15s;
+}
+.pin-key:hover { background: var(--primary); color: #fff; transform: scale(0.97) }
+.pin-key:active { transform: scale(0.93) }
+.pin-key.invisible { visibility: hidden }
+
+.pin-settings .modal-card { max-width: 360px }
+.pin-status { padding: 16px 24px; font-size: 15px }
+.pin-setting-actions { display: flex; flex-direction: column; gap: 10px; padding: 0 24px 24px }
