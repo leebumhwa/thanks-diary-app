@@ -270,11 +270,16 @@
     .form-textarea { resize: vertical; min-height: 90px; }
     .mood-grid { display: flex; flex-wrap: wrap; gap: 8px; }
     .mood-btn {
-      width: 40px; height: 40px; font-size: 22px; border-radius: 9px;
+      width: 52px; height: 58px; border-radius: 9px;
       border: 2.5px solid transparent; transition: all 0.15s;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
     }
+    .mood-emoji { font-size: 22px; line-height: 1; }
+    .mood-lbl   { font-size: 9px; color: var(--text3); font-weight: 600; line-height: 1; }
     .mood-btn:hover { background: var(--surface2); transform: scale(1.1); }
+    .mood-btn:hover .mood-lbl { color: var(--text2); }
     .mood-btn.sel { border-color: var(--primary); background: var(--surface2); transform: scale(1.12); }
+    .mood-btn.sel .mood-lbl { color: var(--primary); }
     .modal-foot {
       display: flex; gap: 10px; justify-content: flex-end;
       padding: 16px 24px; border-top: 1px solid var(--border);
@@ -711,6 +716,10 @@
 <script>
   // ── Constants ──────────────────────────────────────────────────────────
   const MOODS = ['😊','😄','😐','😢','😡','😴','🥰','😰','🤩','😌']
+  const MOOD_LABEL = {
+    '😊':'행복', '😄':'신남', '😐':'보통', '😢':'슬픔', '😡':'화남',
+    '😴':'피곤', '🥰':'사랑', '😰':'불안', '🤩':'설렘', '😌':'평온',
+  }
   const CATS  = ['work','personal','study']
   const CAT_LABEL = { work:'업무', personal:'개인', study:'공부' }
   const CAT_ICON  = { work:'💼',  personal:'🙋',  study:'📚' }
@@ -920,7 +929,7 @@
 
     const DOW = ['일','월','화','수','목','금','토']
     const headers = DOW.map((d,i) =>
-      `<div class="cal-dh${i===0?' sun':i===6?' sat':''}">$${d}</div>`
+      `<div class="cal-dh${i===0?' sun':i===6?' sat':''}">${d}</div>`
     ).join('')
 
     const cellsHtml = cells.map((c, i) => {
@@ -1008,13 +1017,18 @@
     const sel = document.getElementById('mood-filter')
     MOODS.forEach(m => {
       const o = document.createElement('option')
-      o.value = o.textContent = m
+      o.value = m
+      o.textContent = `${m} ${MOOD_LABEL[m] || ''}`
       sel.appendChild(o)
     })
   }
   function initMoodGrid() {
     document.getElementById('mood-grid').innerHTML =
-      MOODS.map(m => `<button class="mood-btn" data-mood="${m}" onclick="selectMood('${m}',this)">${m}</button>`).join('')
+      MOODS.map(m => `
+        <button class="mood-btn" data-mood="${m}" onclick="selectMood('${m}',this)">
+          <span class="mood-emoji">${m}</span>
+          <span class="mood-lbl">${MOOD_LABEL[m] || ''}</span>
+        </button>`).join('')
   }
   function selectMood(m, btn) {
     selMood = m
