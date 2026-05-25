@@ -4,6 +4,47 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=1280">
   <title>감사 일기 — 데스크톱</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <style>
+    /* ── Auth Overlay ── */
+    .auth-overlay {
+      position: fixed; inset: 0; z-index: 9999;
+      background: var(--bg); display: flex; align-items: center; justify-content: center;
+    }
+    .auth-overlay.hidden { display: none; }
+    .auth-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 18px; padding: 40px 44px; width: 380px;
+      box-shadow: var(--shadow-lg); display: flex; flex-direction: column; gap: 0;
+    }
+    .auth-logo { font-size: 40px; text-align: center; margin-bottom: 6px; }
+    .auth-title { font-size: 22px; font-weight: 800; color: var(--primary); text-align: center; margin-bottom: 4px; }
+    .auth-sub { font-size: 13px; color: var(--text3); text-align: center; margin-bottom: 28px; }
+    .auth-tabs { display: flex; gap: 0; margin-bottom: 24px; border-radius: 10px; overflow: hidden; border: 1px solid var(--border); }
+    .auth-tab {
+      flex: 1; padding: 9px 0; font-size: 13px; font-weight: 700;
+      color: var(--text2); background: var(--surface2); transition: all 0.15s; cursor: pointer; border: none;
+    }
+    .auth-tab.active { background: var(--primary); color: #fff; }
+    .auth-field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+    .auth-label { font-size: 12px; font-weight: 700; color: var(--text2); }
+    .auth-input {
+      padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 10px;
+      background: var(--surface2); color: var(--text); font-size: 14px; outline: none;
+      transition: border-color 0.2s;
+    }
+    .auth-input:focus { border-color: var(--primary); }
+    .auth-btn {
+      margin-top: 6px; padding: 12px; background: var(--primary); color: #fff;
+      border: none; border-radius: 10px; font-size: 15px; font-weight: 700;
+      cursor: pointer; transition: background 0.15s; width: 100%;
+    }
+    .auth-btn:hover { background: var(--primary-h); }
+    .auth-btn:disabled { opacity: 0.6; cursor: default; }
+    .auth-msg { margin-top: 12px; font-size: 13px; text-align: center; min-height: 18px; }
+    .auth-msg.error { color: var(--danger); }
+    .auth-msg.success { color: var(--success); }
+  </style>
   <style>
     :root {
       --sidebar-w: 260px;
@@ -167,6 +208,13 @@
     }
     .sb-theme-btn:hover { background: var(--surface2); color: var(--text); }
     .sb-ver { font-size: 10px; color: var(--text3); padding: 0 4px; }
+    .sb-user { display: flex; align-items: center; justify-content: space-between; gap: 6px; padding: 0 4px; }
+    .sb-user-email { font-size: 10px; color: var(--text3); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
+    .sb-logout-btn {
+      font-size: 11px; font-weight: 700; color: var(--danger); padding: 3px 8px;
+      border: 1px solid var(--danger); border-radius: 6px; transition: all 0.15s; flex-shrink: 0;
+    }
+    .sb-logout-btn:hover { background: var(--danger); color: #fff; }
 
     /* Main */
     .main { flex: 1; overflow-y: auto; padding: 36px 44px; background: var(--bg); }
@@ -494,6 +542,32 @@
   </style>
 </head>
 <body>
+
+<!-- AUTH OVERLAY -->
+<div class="auth-overlay" id="auth-overlay">
+  <div class="auth-card">
+    <div class="auth-logo">📔</div>
+    <div class="auth-title">감사 일기</div>
+    <div class="auth-sub">매일의 감사함을 기록하세요</div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tab-login" onclick="showAuthTab('login')">로그인</button>
+      <button class="auth-tab"        id="tab-signup" onclick="showAuthTab('signup')">회원가입</button>
+    </div>
+    <div class="auth-field">
+      <label class="auth-label">이메일</label>
+      <input class="auth-input" id="auth-email" type="email" placeholder="email@example.com"
+             onkeydown="if(event.key==='Enter')document.getElementById('auth-pw').focus()">
+    </div>
+    <div class="auth-field">
+      <label class="auth-label">비밀번호</label>
+      <input class="auth-input" id="auth-pw" type="password" placeholder="••••••••"
+             onkeydown="if(event.key==='Enter')doAuth()">
+    </div>
+    <button class="auth-btn" id="auth-submit" onclick="doAuth()">로그인</button>
+    <div class="auth-msg" id="auth-msg"></div>
+  </div>
+</div>
+
 <div class="shell">
 
   <!-- SIDEBAR -->
@@ -541,7 +615,11 @@
 
     <div class="sb-bottom">
       <button class="sb-theme-btn" id="theme-btn" onclick="toggleTheme()">🌙 다크 모드</button>
-      <span class="sb-ver">데스크톱 v1.2 · 로컬 저장</span>
+      <div class="sb-user" id="sb-user" style="display:none">
+        <span class="sb-user-email" id="sb-user-email"></span>
+        <button class="sb-logout-btn" onclick="doSignOut()">로그아웃</button>
+      </div>
+      <span class="sb-ver">데스크톱 v1.2 · Supabase</span>
     </div>
   </aside>
 
@@ -714,6 +792,76 @@
 </div>
 
 <script>
+  // ── Supabase Auth ──────────────────────────────────────────────────────
+  const SUPABASE_URL      = 'https://ibsjguxffwfdjpczdrhs.supabase.co'
+  const SUPABASE_ANON_KEY = 'sb_publishable_dvRxA2PB8kNSUyv8z0p6Bw_J4gBo0nV'
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+
+  let currentUser = null
+
+  function userStorageKey(base) {
+    return currentUser ? `${base}_${currentUser.id}` : base
+  }
+
+  function showAuthTab(tab) {
+    document.getElementById('tab-login').classList.toggle('active',  tab === 'login')
+    document.getElementById('tab-signup').classList.toggle('active', tab === 'signup')
+    document.getElementById('auth-submit').textContent = tab === 'login' ? '로그인' : '회원가입'
+    document.getElementById('auth-msg').textContent = ''
+    document.getElementById('auth-msg').className = 'auth-msg'
+    window._authTab = tab
+  }
+  window._authTab = 'login'
+
+  async function doAuth() {
+    const email = document.getElementById('auth-email').value.trim()
+    const pw    = document.getElementById('auth-pw').value
+    const btn   = document.getElementById('auth-submit')
+    const msg   = document.getElementById('auth-msg')
+    if (!email || !pw) { msg.textContent = '이메일과 비밀번호를 입력해주세요.'; msg.className = 'auth-msg error'; return }
+    btn.disabled = true
+    msg.textContent = '처리 중...'; msg.className = 'auth-msg'
+    try {
+      let res
+      if (window._authTab === 'login') {
+        res = await sb.auth.signInWithPassword({ email, password: pw })
+      } else {
+        res = await sb.auth.signUp({ email, password: pw })
+        if (!res.error && res.data.user && !res.data.session) {
+          msg.textContent = '가입 확인 이메일을 발송했습니다. 이메일을 확인해주세요.'; msg.className = 'auth-msg success'
+          btn.disabled = false; return
+        }
+      }
+      if (res.error) throw res.error
+    } catch (e) {
+      const korean = { 'Invalid login credentials': '이메일 또는 비밀번호가 잘못되었습니다.', 'Email not confirmed': '이메일 인증이 필요합니다.', 'User already registered': '이미 가입된 이메일입니다.' }
+      msg.textContent = korean[e.message] || e.message; msg.className = 'auth-msg error'
+      btn.disabled = false
+    }
+  }
+
+  async function doSignOut() {
+    await sb.auth.signOut()
+  }
+
+  function onAuthReady(user) {
+    currentUser = user
+    if (user) {
+      document.getElementById('auth-overlay').classList.add('hidden')
+      document.getElementById('sb-user').style.display = 'flex'
+      document.getElementById('sb-user-email').textContent = user.email
+      loadState()
+      document.dispatchEvent(new Event('appReady'))
+    } else {
+      document.getElementById('auth-overlay').classList.remove('hidden')
+      document.getElementById('sb-user').style.display = 'none'
+    }
+  }
+
+  sb.auth.onAuthStateChange((_event, session) => {
+    onAuthReady(session?.user ?? null)
+  })
+
   // ── Constants ──────────────────────────────────────────────────────────
   const MOODS = ['😊','😄','😐','😢','😡','😴','🥰','😰','🤩','😌']
   const MOOD_LABEL = {
@@ -747,14 +895,14 @@
 
   // ── Persistence ────────────────────────────────────────────────────────
   function loadState() {
-    try { diaries  = JSON.parse(localStorage.getItem('web_diary_entries') || '[]') } catch {}
-    try { const d = JSON.parse(localStorage.getItem('todo_app_data')); if (Array.isArray(d?.todos)) todos = d.todos } catch {}
-    try { const d = JSON.parse(localStorage.getItem('todo_keywords'));  if (d && CATS.every(c=>Array.isArray(d[c]))) customKw = d } catch {}
+    try { diaries  = JSON.parse(localStorage.getItem(userStorageKey('web_diary_entries')) || '[]') } catch {}
+    try { const d = JSON.parse(localStorage.getItem(userStorageKey('todo_app_data'))); if (Array.isArray(d?.todos)) todos = d.todos } catch {}
+    try { const d = JSON.parse(localStorage.getItem(userStorageKey('todo_keywords')));  if (d && CATS.every(c=>Array.isArray(d[c]))) customKw = d } catch {}
     dark = localStorage.getItem('theme') === 'dark'
   }
-  function saveDiaries() { localStorage.setItem('web_diary_entries', JSON.stringify(diaries)) }
-  function saveTodos()   { localStorage.setItem('todo_app_data', JSON.stringify({ todos })); updateSbStats() }
-  function saveKw()      { localStorage.setItem('todo_keywords', JSON.stringify(customKw)) }
+  function saveDiaries() { localStorage.setItem(userStorageKey('web_diary_entries'), JSON.stringify(diaries)) }
+  function saveTodos()   { localStorage.setItem(userStorageKey('todo_app_data'), JSON.stringify({ todos })); updateSbStats() }
+  function saveKw()      { localStorage.setItem(userStorageKey('todo_keywords'), JSON.stringify(customKw)) }
 
   // ── Util ───────────────────────────────────────────────────────────────
   function esc(s) {
@@ -780,8 +928,10 @@
   }
 
   // ── Init ───────────────────────────────────────────────────────────────
-  loadState()
-  document.addEventListener('DOMContentLoaded', () => {
+  let _appInitDone = false
+  function initApp() {
+    if (_appInitDone) { renderDiaryPage(); renderTodoPage(); updateSbStats(); return }
+    _appInitDone = true
     if (dark) document.documentElement.classList.add('dark')
     updateThemeBtn()
     initMoodFilter()
@@ -801,7 +951,17 @@
     fetchWeather()
     setInterval(fetchWeather, 30 * 60 * 1000)
     renderCalendar()
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    dark = localStorage.getItem('theme') === 'dark'
+    if (dark) document.documentElement.classList.add('dark')
+    updateThemeBtn()
+    updateClock()
+    setInterval(updateClock, 1000)
   })
+
+  document.addEventListener('appReady', initApp)
 
   // ── Theme ──────────────────────────────────────────────────────────────
   function toggleTheme() {
@@ -1266,6 +1426,7 @@
 
   // ── Keyboard shortcuts ─────────────────────────────────────────────────
   document.addEventListener('keydown', e => {
+    if (!document.getElementById('auth-overlay').classList.contains('hidden')) return
     const tag = document.activeElement.tagName
     const inInput = tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT'
     const anyModalOpen = !document.getElementById('diary-modal').classList.contains('hidden') ||
