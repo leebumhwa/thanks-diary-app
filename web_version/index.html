@@ -49,8 +49,10 @@
     input, textarea, select { font: inherit; }
     ul { list-style: none; }
 
-    .shell { display: flex; height: 100vh; }
+    /* Shell */
+    .shell { display: flex; height: 100vh; min-width: 900px; }
 
+    /* Sidebar */
     .sidebar {
       width: var(--sidebar-w); min-width: var(--sidebar-w);
       display: flex; flex-direction: column;
@@ -76,6 +78,7 @@
     .sb-btn.active { background: var(--primary); color: #fff; }
     .sb-divider { height: 1px; background: var(--border); margin: 0 14px; flex-shrink: 0; }
 
+    /* Scrollable sidebar middle */
     .sb-scroll { flex: 1; overflow-y: auto; padding: 6px 0; }
     .sb-scroll::-webkit-scrollbar { width: 3px; }
     .sb-scroll::-webkit-scrollbar-track { background: transparent; }
@@ -86,13 +89,15 @@
       border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px;
     }
     .sb-widget-title {
-      font-size: 9px; font-weight: 700; color: var(--text3);
+      font-size: 11px; font-weight: 700; color: var(--text3);
       text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 7px;
     }
 
+    /* Clock */
     .sb-clock { font-size: 20px; font-weight: 700; color: var(--text); letter-spacing: 0.03em; line-height: 1; }
     .sb-clock-date { font-size: 10px; color: var(--text3); margin-top: 3px; }
 
+    /* Weather */
     .sb-weather-row { display: flex; align-items: center; gap: 8px; }
     .sb-weather-icon { font-size: 24px; line-height: 1; }
     .sb-weather-info { display: flex; flex-direction: column; gap: 1px; }
@@ -101,6 +106,7 @@
     .sb-weather-loc  { font-size: 10px; color: var(--text3); margin-top: 3px; }
     .sb-weather-msg  { font-size: 11px; color: var(--text3); }
 
+    /* Calendar */
     .cal-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px; }
     .cal-nav-btn {
       width: 20px; height: 20px; border-radius: 5px; font-size: 13px;
@@ -111,7 +117,7 @@
     .cal-month-lbl { font-size: 11px; font-weight: 700; color: var(--text); }
     .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); }
     .cal-dh {
-      text-align: center; font-size: 8px; font-weight: 700;
+      text-align: center; font-size: 9px; font-weight: 700;
       color: var(--text3); padding: 2px 0 4px;
     }
     .cal-dh.sun { color: #EF4444; }
@@ -142,11 +148,13 @@
     .cal-dot-personal { background: var(--personal); }
     .cal-dot-study    { background: var(--study); }
 
+    /* Stats */
     .sb-stat { display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 11px; }
     .sb-stat:last-child { margin-bottom: 0; }
     .sb-stat-label { color: var(--text2); }
     .sb-stat-val { font-weight: 700; color: var(--text); }
 
+    /* Bottom */
     .sb-bottom {
       padding: 10px 10px; border-top: 1px solid var(--border);
       display: flex; flex-direction: column; gap: 4px; flex-shrink: 0;
@@ -160,6 +168,7 @@
     .sb-theme-btn:hover { background: var(--surface2); color: var(--text); }
     .sb-ver { font-size: 10px; color: var(--text3); padding: 0 4px; }
 
+    /* Main */
     .main { flex: 1; overflow-y: auto; padding: 36px 44px; background: var(--bg); }
     .page { display: none; }
     .page.active { display: block; }
@@ -188,6 +197,7 @@
     }
     .btn-primary:hover { background: var(--primary-h); }
 
+    /* Diary Grid */
     .diary-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
     .empty-state { grid-column: 1/-1; text-align: center; padding: 80px 20px; color: var(--text3); line-height: 2.5; }
     .empty-state .empty-icon { font-size: 52px; display: block; margin-bottom: 8px; }
@@ -203,7 +213,8 @@
     .card-mood { font-size: 26px; }
     .card-date { flex: 1; font-size: 13px; color: var(--text3); font-weight: 500; }
     .card-actions { display: flex; gap: 4px; opacity: 0; transition: opacity 0.15s; }
-    .diary-card:hover .card-actions { opacity: 1; }
+    .diary-card:hover .card-actions,
+    .diary-card:focus-within .card-actions { opacity: 1; }
     .action-btn {
       width: 30px; height: 30px; border-radius: 8px; font-size: 15px;
       display: flex; align-items: center; justify-content: center;
@@ -220,6 +231,7 @@
     .card-thanks ul { padding-left: 14px; display: flex; flex-direction: column; gap: 4px; }
     .card-thanks li { font-size: 13px; color: var(--text2); list-style: disc; }
 
+    /* Modal */
     .modal-bg {
       position: fixed; inset: 0; background: rgba(0,0,0,0.5);
       display: flex; align-items: center; justify-content: center;
@@ -279,6 +291,7 @@
     }
     .btn-save:hover { background: var(--primary-h); }
 
+    /* Todo Desktop Layout */
     .todo-layout { display: grid; grid-template-columns: 1fr 320px; gap: 28px; align-items: start; }
     .todo-main { display: flex; flex-direction: column; gap: 16px; }
     .todo-aside { position: sticky; top: 0; display: flex; flex-direction: column; gap: 16px; }
@@ -291,6 +304,7 @@
       text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px;
     }
 
+    /* Progress */
     .prog-hd { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
     .prog-text { font-size: 20px; font-weight: 700; }
     .prog-pct  { font-size: 13px; color: var(--text3); }
@@ -311,6 +325,7 @@
     .cf-personal { background: var(--personal); }
     .cf-study    { background: var(--study); }
 
+    /* Todo Input */
     .todo-input-row { display: flex; gap: 8px; align-items: flex-start; }
     .todo-text-inp {
       flex: 1; padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 9px;
@@ -338,6 +353,7 @@
     }
     .todo-add-btn:hover { background: #3a6fd8; }
 
+    /* Due date row */
     .todo-due-row {
       display: flex; align-items: center; gap: 8px;
       margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border);
@@ -361,6 +377,7 @@
     }
     .kw-link:hover { color: var(--primary); }
 
+    /* Filter tabs */
     .filter-tabs { display: flex; gap: 6px; flex-wrap: wrap; }
     .filter-btn {
       padding: 7px 14px; border-radius: 999px; font-size: 13px; font-weight: 600;
@@ -373,6 +390,7 @@
     .filter-btn.f-personal.active { background: var(--personal); border-color: var(--personal); }
     .filter-btn.f-study.active    { background: var(--study);    border-color: var(--study); }
 
+    /* Todo List */
     .todo-list { display: flex; flex-direction: column; gap: 10px; min-height: 60px; }
     .todo-empty { text-align: center; padding: 40px 0; color: var(--text3); font-size: 14px; }
     @keyframes fadeIn2 { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: none; } }
@@ -393,6 +411,7 @@
     }
     .item-badge { font-size: 11px; font-weight: 700; padding: 2px 9px; border-radius: 999px; color: #fff; flex-shrink: 0; }
 
+    /* Due badge */
     .due-badge {
       font-size: 10px; font-weight: 600; padding: 1px 7px;
       border-radius: 999px; white-space: nowrap; align-self: flex-start;
@@ -415,6 +434,7 @@
     }
     .btn-del:hover { background: #FEE2E2; color: #EF4444; }
 
+    /* Todo Footer */
     .todo-foot { display: flex; justify-content: space-between; align-items: center; }
     .btn-clear {
       padding: 8px 14px; border: 1.5px solid var(--border); border-radius: 9px;
@@ -424,6 +444,7 @@
     .btn-clear:disabled { opacity: 0.4; cursor: not-allowed; }
     .todo-count { font-size: 13px; color: var(--text3); font-weight: 500; }
 
+    /* Keyword Modal */
     .kw-modal-box { max-width: 460px; }
     .kw-body { padding: 16px 24px 24px; display: flex; flex-direction: column; gap: 22px; }
     .kw-section { display: flex; flex-direction: column; gap: 10px; }
@@ -453,6 +474,7 @@
     .kw-add-study    { background: var(--study); }
     .kw-add-work:hover, .kw-add-personal:hover, .kw-add-study:hover { opacity: 0.85; }
 
+    /* Day Detail Modal */
     .day-modal-box { max-width: 400px; }
     .day-modal-body { padding: 14px 20px 20px; display: flex; flex-direction: column; gap: 8px; }
     .day-empty { text-align: center; padding: 24px; color: var(--text3); font-size: 13px; }
@@ -469,30 +491,41 @@
 <body>
 <div class="shell">
 
+  <!-- SIDEBAR -->
   <aside class="sidebar">
     <div class="sb-brand">
       <span class="sb-logo">📔</span>
       <h1 class="sb-title">감사 일기</h1>
     </div>
+
     <nav class="sb-nav">
       <button class="sb-btn active" onclick="switchPage('diary', this)">📔 일기</button>
       <button class="sb-btn"        onclick="switchPage('todo',  this)">✅ 할 일</button>
     </nav>
+
     <div class="sb-divider"></div>
+
     <div class="sb-scroll">
+      <!-- Clock -->
       <div class="sb-widget">
         <div class="sb-widget-title">현재 시간</div>
         <div class="sb-clock" id="sb-clock">--:--:--</div>
         <div class="sb-clock-date" id="sb-clock-date"></div>
       </div>
+
+      <!-- Weather -->
       <div class="sb-widget">
         <div class="sb-widget-title">날씨</div>
         <div id="sb-weather"><span class="sb-weather-msg">불러오는 중...</span></div>
       </div>
+
+      <!-- Calendar -->
       <div class="sb-widget">
         <div class="sb-widget-title">달력</div>
         <div id="sb-cal"></div>
       </div>
+
+      <!-- Stats -->
       <div class="sb-widget">
         <div class="sb-widget-title">현황</div>
         <div class="sb-stat"><span class="sb-stat-label">총 일기</span><span class="sb-stat-val" id="stat-diary">0개</span></div>
@@ -500,13 +533,17 @@
         <div class="sb-stat"><span class="sb-stat-label">오늘</span><span class="sb-stat-val" id="stat-date">-</span></div>
       </div>
     </div>
+
     <div class="sb-bottom">
       <button class="sb-theme-btn" id="theme-btn" onclick="toggleTheme()">🌙 다크 모드</button>
-      <span class="sb-ver">데스크톱 v1.1 · 로컬 저장</span>
+      <span class="sb-ver">데스크톱 v1.2 · 로컬 저장</span>
     </div>
   </aside>
 
+  <!-- MAIN -->
   <main class="main">
+
+    <!-- DIARY PAGE -->
     <section id="page-diary" class="page active">
       <div class="page-hd">
         <div class="page-hd-left">
@@ -524,6 +561,7 @@
       <div class="diary-grid" id="diary-grid"></div>
     </section>
 
+    <!-- TODO PAGE -->
     <section id="page-todo" class="page">
       <div class="page-hd">
         <div class="page-hd-left">
@@ -532,6 +570,7 @@
         </div>
       </div>
       <div class="todo-layout">
+
         <div class="todo-main">
           <div class="card">
             <div class="todo-input-row">
@@ -556,18 +595,22 @@
             </div>
             <button class="kw-link" onclick="openKwModal()">⚙️ 자동 분류 키워드 설정</button>
           </div>
+
           <div class="filter-tabs">
             <button class="filter-btn active"     onclick="setFilter('all',      this)">전체</button>
             <button class="filter-btn f-work"     onclick="setFilter('work',     this)">💼 업무</button>
             <button class="filter-btn f-personal" onclick="setFilter('personal', this)">🙋 개인</button>
             <button class="filter-btn f-study"    onclick="setFilter('study',    this)">📚 공부</button>
           </div>
+
           <ul class="todo-list" id="todo-list"></ul>
+
           <div class="todo-foot">
             <button class="btn-clear" id="btn-clear" onclick="clearDone()" disabled>완료 항목 삭제</button>
             <span class="todo-count" id="todo-count">총 0개</span>
           </div>
         </div>
+
         <div class="todo-aside">
           <div class="card">
             <div class="card-label">전체 진행률</div>
@@ -575,35 +618,60 @@
               <span class="prog-text" id="prog-text">0 / 0 완료</span>
               <span class="prog-pct"  id="prog-pct">0%</span>
             </div>
-            <div class="prog-track"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+            <div class="prog-track">
+              <div class="prog-fill" id="prog-fill" style="width:0%"></div>
+            </div>
             <div class="cat-rows">
               <div class="cat-row">
-                <div class="cat-row-hd"><span class="cat-badge c-work">💼 업무</span><span class="cat-cnt" id="cc-work">항목 없음</span></div>
+                <div class="cat-row-hd">
+                  <span class="cat-badge c-work">💼 업무</span>
+                  <span class="cat-cnt" id="cc-work">항목 없음</span>
+                </div>
                 <div class="cat-track"><div class="cat-fill cf-work" id="cf-work" style="width:0%"></div></div>
               </div>
               <div class="cat-row">
-                <div class="cat-row-hd"><span class="cat-badge c-personal">🙋 개인</span><span class="cat-cnt" id="cc-personal">항목 없음</span></div>
+                <div class="cat-row-hd">
+                  <span class="cat-badge c-personal">🙋 개인</span>
+                  <span class="cat-cnt" id="cc-personal">항목 없음</span>
+                </div>
                 <div class="cat-track"><div class="cat-fill cf-personal" id="cf-personal" style="width:0%"></div></div>
               </div>
               <div class="cat-row">
-                <div class="cat-row-hd"><span class="cat-badge c-study">📚 공부</span><span class="cat-cnt" id="cc-study">항목 없음</span></div>
+                <div class="cat-row-hd">
+                  <span class="cat-badge c-study">📚 공부</span>
+                  <span class="cat-cnt" id="cc-study">항목 없음</span>
+                </div>
                 <div class="cat-track"><div class="cat-fill cf-study" id="cf-study" style="width:0%"></div></div>
               </div>
             </div>
           </div>
         </div>
+
       </div>
     </section>
   </main>
 </div>
 
+<!-- DIARY FORM MODAL -->
 <div class="modal-bg hidden" id="diary-modal" onclick="if(event.target===this)closeDiaryForm()">
   <div class="modal-box">
-    <div class="modal-hd"><h3 id="form-title">새 일기</h3><button class="modal-close" onclick="closeDiaryForm()">✕</button></div>
+    <div class="modal-hd">
+      <h3 id="form-title">새 일기</h3>
+      <button class="modal-close" onclick="closeDiaryForm()">✕</button>
+    </div>
     <div class="modal-body">
-      <div class="form-row"><label class="form-label">날짜</label><input class="form-input" id="f-date" type="date"></div>
-      <div class="form-row"><label class="form-label">기분</label><div class="mood-grid" id="mood-grid"></div></div>
-      <div class="form-row"><label class="form-label">오늘 하루</label><textarea class="form-textarea" id="f-content" rows="4" placeholder="오늘 있었던 일을 적어보세요..."></textarea></div>
+      <div class="form-row">
+        <label class="form-label">날짜</label>
+        <input class="form-input" id="f-date" type="date">
+      </div>
+      <div class="form-row">
+        <label class="form-label">기분</label>
+        <div class="mood-grid" id="mood-grid"></div>
+      </div>
+      <div class="form-row">
+        <label class="form-label">오늘 하루</label>
+        <textarea class="form-textarea" id="f-content" rows="4" placeholder="오늘 있었던 일을 적어보세요..."></textarea>
+      </div>
       <div class="form-row">
         <label class="form-label">✨ 감사한 일 3가지</label>
         <input class="form-input" id="f-t0" placeholder="1. 감사한 일" style="margin-bottom:6px">
@@ -611,25 +679,37 @@
         <input class="form-input" id="f-t2" placeholder="3. 감사한 일">
       </div>
     </div>
-    <div class="modal-foot"><button class="btn-cancel" onclick="closeDiaryForm()">취소</button><button class="btn-save" onclick="saveDiary()">저장</button></div>
+    <div class="modal-foot">
+      <button class="btn-cancel" onclick="closeDiaryForm()">취소</button>
+      <button class="btn-save"   onclick="saveDiary()">저장</button>
+    </div>
   </div>
 </div>
 
+<!-- KEYWORD MODAL -->
 <div class="modal-bg hidden" id="kw-modal" onclick="if(event.target===this)closeKwModal()">
   <div class="modal-box kw-modal-box">
-    <div class="modal-hd"><h3>⚙️ 자동 분류 키워드 설정</h3><button class="modal-close" onclick="closeKwModal()">✕</button></div>
+    <div class="modal-hd">
+      <h3>⚙️ 자동 분류 키워드 설정</h3>
+      <button class="modal-close" onclick="closeKwModal()">✕</button>
+    </div>
     <div class="kw-body" id="kw-body"></div>
   </div>
 </div>
 
+<!-- DAY DETAIL MODAL -->
 <div class="modal-bg hidden" id="day-modal" onclick="if(event.target===this)closeDayDetail()">
   <div class="modal-box day-modal-box">
-    <div class="modal-hd"><h3 id="day-modal-title"></h3><button class="modal-close" onclick="closeDayDetail()">✕</button></div>
+    <div class="modal-hd">
+      <h3 id="day-modal-title"></h3>
+      <button class="modal-close" onclick="closeDayDetail()">✕</button>
+    </div>
     <div class="day-modal-body" id="day-modal-body"></div>
   </div>
 </div>
 
 <script>
+  // ── Constants ──────────────────────────────────────────────────────────
   const MOODS = ['😊','😄','😐','😢','😡','😴','🥰','😰','🤩','😌']
   const CATS  = ['work','personal','study']
   const CAT_LABEL = { work:'업무', personal:'개인', study:'공부' }
@@ -640,200 +720,576 @@
     study:    ['공부','강의','독서','책','시험','과제','학원','수업','인강','복습','예습','자격증','토익','영어','프로그래밍','코딩','강좌','논문','학습','스터디','튜토리얼','문제풀이','강습'],
   }
 
-  let diaries=[],todos=[],customKw={work:[],personal:[],study:[]}
-  let diarySearch='',moodFilter='',todoFilter='all'
-  let editDiaryId=null,editTodoId=null,selMood=''
-  let userOverrode=false,dark=false
-  let calYear=new Date().getFullYear(),calMonth=new Date().getMonth()
-  let dayDetailDate=null
+  // ── State ──────────────────────────────────────────────────────────────
+  let diaries      = []
+  let todos        = []
+  let customKw     = { work:[], personal:[], study:[] }
+  let diarySearch  = ''
+  let moodFilter   = ''
+  let todoFilter   = 'all'
+  let editDiaryId  = null
+  let editTodoId   = null
+  let selMood      = ''
+  let userOverrode = false
+  let dark         = false
+  let calYear      = new Date().getFullYear()
+  let calMonth     = new Date().getMonth()
+  let dayDetailDate = null
 
-  function loadState(){
-    try{diaries=JSON.parse(localStorage.getItem('web_diary_entries')||'[]')}catch{}
-    try{const d=JSON.parse(localStorage.getItem('todo_app_data'));if(Array.isArray(d?.todos))todos=d.todos}catch{}
-    try{const d=JSON.parse(localStorage.getItem('todo_keywords'));if(d&&CATS.every(c=>Array.isArray(d[c])))customKw=d}catch{}
-    dark=localStorage.getItem('theme')==='dark'
+  // ── Persistence ────────────────────────────────────────────────────────
+  function loadState() {
+    try { diaries  = JSON.parse(localStorage.getItem('web_diary_entries') || '[]') } catch {}
+    try { const d = JSON.parse(localStorage.getItem('todo_app_data')); if (Array.isArray(d?.todos)) todos = d.todos } catch {}
+    try { const d = JSON.parse(localStorage.getItem('todo_keywords'));  if (d && CATS.every(c=>Array.isArray(d[c]))) customKw = d } catch {}
+    dark = localStorage.getItem('theme') === 'dark'
   }
-  function saveDiaries(){localStorage.setItem('web_diary_entries',JSON.stringify(diaries))}
-  function saveTodos(){localStorage.setItem('todo_app_data',JSON.stringify({todos}));updateSbStats()}
-  function saveKw(){localStorage.setItem('todo_keywords',JSON.stringify(customKw))}
-  function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
-  function escBr(s){return esc(s).replace(/\n/g,'<br>')}
-  function localDateStr(d){return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
-  function fmtDue(dueDate){
-    if(!dueDate)return null
-    const today=new Date();today.setHours(0,0,0,0)
-    const due=new Date(dueDate+'T00:00:00')
-    const diff=Math.round((due-today)/86400000)
-    const label=`${due.getMonth()+1}/${due.getDate()}`
-    if(diff<0)return{text:`${label} 지남`,cls:'due-overdue'}
-    if(diff===0)return{text:'오늘 마감',cls:'due-today'}
-    if(diff===1)return{text:'내일 마감',cls:'due-soon'}
-    if(diff<=7)return{text:label,cls:'due-soon'}
-    return{text:label,cls:'due-future'}
+  function saveDiaries() { localStorage.setItem('web_diary_entries', JSON.stringify(diaries)) }
+  function saveTodos()   { localStorage.setItem('todo_app_data', JSON.stringify({ todos })); updateSbStats() }
+  function saveKw()      { localStorage.setItem('todo_keywords', JSON.stringify(customKw)) }
+
+  // ── Util ───────────────────────────────────────────────────────────────
+  function esc(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+  }
+  function escBr(s) { return esc(s).replace(/\n/g,'<br>') }
+
+  function localDateStr(d) {
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`
   }
 
+  function fmtDue(dueDate) {
+    if (!dueDate) return null
+    const today = new Date(); today.setHours(0,0,0,0)
+    const due   = new Date(dueDate + 'T00:00:00')
+    const diff  = Math.round((due - today) / 86400000)
+    const label = `${due.getMonth()+1}/${due.getDate()}`
+    if (diff < 0)  return { text: `${label} 지남`, cls: 'due-overdue' }
+    if (diff === 0) return { text: '오늘 마감',    cls: 'due-today'   }
+    if (diff === 1) return { text: '내일 마감',    cls: 'due-soon'    }
+    if (diff <= 7)  return { text: `${label}`,     cls: 'due-soon'    }
+    return { text: label, cls: 'due-future' }
+  }
+
+  // ── Init ───────────────────────────────────────────────────────────────
   loadState()
-  document.addEventListener('DOMContentLoaded',()=>{
-    if(dark)document.documentElement.classList.add('dark')
-    updateThemeBtn();initMoodFilter();initMoodGrid()
-    renderDiaryPage();renderTodoPage();updateSbStats()
-    const now=new Date()
-    document.getElementById('todo-date').textContent=now.toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric',weekday:'long'})
-    document.getElementById('stat-date').textContent=now.toLocaleDateString('ko-KR',{month:'long',day:'numeric'})
-    updateClock();setInterval(updateClock,1000)
-    fetchWeather();renderCalendar()
+  document.addEventListener('DOMContentLoaded', () => {
+    if (dark) document.documentElement.classList.add('dark')
+    updateThemeBtn()
+    initMoodFilter()
+    initMoodGrid()
+    renderDiaryPage()
+    renderTodoPage()
+    updateSbStats()
+
+    const now = new Date()
+    document.getElementById('todo-date').textContent =
+      now.toLocaleDateString('ko-KR', { year:'numeric', month:'long', day:'numeric', weekday:'long' })
+    document.getElementById('stat-date').textContent =
+      now.toLocaleDateString('ko-KR', { month:'long', day:'numeric' })
+
+    updateClock()
+    setInterval(updateClock, 1000)
+    fetchWeather()
+    setInterval(fetchWeather, 30 * 60 * 1000)
+    renderCalendar()
   })
 
-  function toggleTheme(){dark=!dark;document.documentElement.classList.toggle('dark',dark);localStorage.setItem('theme',dark?'dark':'light');updateThemeBtn()}
-  function updateThemeBtn(){document.getElementById('theme-btn').textContent=dark?'☀️ 라이트 모드':'🌙 다크 모드'}
-  function switchPage(p,btn){
-    document.querySelectorAll('.sb-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active')
-    document.querySelectorAll('.page').forEach(s=>s.classList.remove('active'));document.getElementById('page-'+p).classList.add('active')
+  // ── Theme ──────────────────────────────────────────────────────────────
+  function toggleTheme() {
+    dark = !dark
+    document.documentElement.classList.toggle('dark', dark)
+    localStorage.setItem('theme', dark ? 'dark' : 'light')
+    updateThemeBtn()
   }
-  function updateSbStats(){
-    document.getElementById('stat-diary').textContent=diaries.length+'개'
-    const done=todos.filter(t=>t.completed).length
-    document.getElementById('stat-todo').textContent=(todos.length===0?0:Math.round(done/todos.length*100))+'%'
-  }
-
-  function updateClock(){
-    const now=new Date()
-    document.getElementById('sb-clock').textContent=now.toLocaleTimeString('ko-KR',{hour12:false})
-    document.getElementById('sb-clock-date').textContent=now.toLocaleDateString('ko-KR',{month:'long',day:'numeric',weekday:'short'})
+  function updateThemeBtn() {
+    document.getElementById('theme-btn').textContent = dark ? '☀️ 라이트 모드' : '🌙 다크 모드'
   }
 
-  async function fetchWeather(){
-    const el=document.getElementById('sb-weather')
-    try{
-      const res=await fetch('https://wttr.in/?format=j1')
-      const data=await res.json()
-      const cc=data.current_condition[0],area=data.nearest_area[0]
-      const icon=weatherEmoji(parseInt(cc.weatherCode))
-      el.innerHTML=`<div class="sb-weather-row"><span class="sb-weather-icon">${icon}</span><div class="sb-weather-info"><span class="sb-weather-temp">${cc.temp_C}°C</span><span class="sb-weather-desc">${translateWeather(cc.weatherDesc[0].value)}</span></div></div><div class="sb-weather-loc">📍 ${esc(area.areaName[0].value)}</div>`
-    }catch{el.innerHTML='<span class="sb-weather-msg">날씨 정보 없음</span>'}
-  }
-  function weatherEmoji(c){
-    if(c===113)return'☀️';if(c===116)return'⛅'
-    if([119,122].includes(c))return'☁️';if([143,248,260].includes(c))return'🌫️'
-    if([200,386,389,392,395].includes(c))return'⛈️'
-    if([179,182,185,227,230,323,326,329,332,335,338,350,362,365,368,371,374,377].includes(c))return'❄️'
-    return'🌧️'
-  }
-  function translateWeather(d){
-    const m={'Sunny':'맑음','Clear':'맑음','Partly cloudy':'구름 조금','Partly Cloudy':'구름 조금','Cloudy':'흐림','Overcast':'흐림','Mist':'안개','Fog':'안개','Light rain':'가벼운 비','Moderate rain':'비','Heavy rain':'강한 비','Light drizzle':'이슬비','Heavy drizzle':'이슬비','Freezing drizzle':'이슬비','Light snow':'가벼운 눈','Moderate snow':'눈','Heavy snow':'강한 눈','Blizzard':'눈보라','Patchy rain possible':'비 가능','Patchy snow possible':'눈 가능','Thundery outbreaks possible':'천둥번개','Blowing snow':'눈보라'}
-    return m[d]||d
+  // ── Navigation ─────────────────────────────────────────────────────────
+  function switchPage(p, btn) {
+    document.querySelectorAll('.sb-btn').forEach(b => b.classList.remove('active'))
+    btn.classList.add('active')
+    document.querySelectorAll('.page').forEach(s => s.classList.remove('active'))
+    document.getElementById('page-' + p).classList.add('active')
   }
 
-  function renderCalendar(){
-    const todayStr=localDateStr(new Date())
-    const firstDay=new Date(calYear,calMonth,1),lastDay=new Date(calYear,calMonth+1,0)
-    const startDow=firstDay.getDay(),daysInMon=lastDay.getDate()
-    const todosByDate={}
-    todos.forEach(t=>{if(t.dueDate){if(!todosByDate[t.dueDate])todosByDate[t.dueDate]=[];todosByDate[t.dueDate].push(t)}})
-    const cells=[]
-    for(let i=0;i<startDow;i++){const pl=new Date(calYear,calMonth,0),d=pl.getDate()-startDow+1+i,py=calMonth===0?calYear-1:calYear,pm=calMonth===0?11:calMonth-1;cells.push({day:d,dateStr:`${py}-${String(pm+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`,other:true})}
-    for(let d=1;d<=daysInMon;d++){const ds=`${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;cells.push({day:d,dateStr:ds,other:false,todos:todosByDate[ds]||[]})}
-    const rem=cells.length%7===0?0:7-cells.length%7
-    for(let i=1;i<=rem;i++){const ny=calMonth===11?calYear+1:calYear,nm=calMonth===11?0:calMonth+1;cells.push({day:i,dateStr:`${ny}-${String(nm+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`,other:true})}
-    const DOW=['일','월','화','수','목','금','토']
-    const headers=DOW.map((d,i)=>`<div class="cal-dh${i===0?' sun':i===6?' sat':''}">${ d}</div>`).join('')
-    const cellsHtml=cells.map((c,i)=>{
-      const col=i%7,isToday=!c.other&&c.dateStr===todayStr,hasTodos=!c.other&&c.todos&&c.todos.length>0
-      const classes=['cal-cell',c.other?'other-month':'',isToday?'today':'',col===0?'sun-col':'',col===6?'sat-col':'',hasTodos?'has-todo':''].filter(Boolean).join(' ')
-      const dots=hasTodos?c.todos.slice(0,3).map(t=>`<span class="cal-dot cal-dot-${t.category}"></span>`).join(''):''
-      return`<div class="${classes}"${hasTodos?` onclick="showDayDetail('${c.dateStr}')"`:''}><span class="cal-day">${c.day}</span>${dots?`<div class="cal-dots">${dots}</div>`:''}</div>`
+  // ── Sidebar Stats ──────────────────────────────────────────────────────
+  function updateSbStats() {
+    document.getElementById('stat-diary').textContent = diaries.length + '개'
+    const done = todos.filter(t => t.completed).length
+    const pct  = todos.length === 0 ? 0 : Math.round(done / todos.length * 100)
+    document.getElementById('stat-todo').textContent = pct + '%'
+  }
+
+  // ── Clock ──────────────────────────────────────────────────────────────
+  function updateClock() {
+    const now = new Date()
+    document.getElementById('sb-clock').textContent =
+      now.toLocaleTimeString('ko-KR', { hour12: false })
+    document.getElementById('sb-clock-date').textContent =
+      now.toLocaleDateString('ko-KR', { month: 'long', day: 'numeric', weekday: 'short' })
+  }
+
+  // ── Weather ────────────────────────────────────────────────────────────
+  async function fetchWeather() {
+    const el = document.getElementById('sb-weather')
+    try {
+      const res  = await fetch('https://wttr.in/?format=j1')
+      const data = await res.json()
+      const cc   = data.current_condition[0]
+      const area = data.nearest_area[0]
+      const temp = cc.temp_C
+      const code = parseInt(cc.weatherCode)
+      const desc = cc.weatherDesc[0].value
+      const city = area.areaName[0].value
+      const icon = weatherEmoji(code)
+      el.innerHTML = `
+        <div class="sb-weather-row">
+          <span class="sb-weather-icon">${icon}</span>
+          <div class="sb-weather-info">
+            <span class="sb-weather-temp">${temp}°C</span>
+            <span class="sb-weather-desc">${translateWeather(desc)}</span>
+          </div>
+        </div>
+        <div class="sb-weather-loc">📍 ${esc(city)}</div>`
+    } catch {
+      el.innerHTML = '<span class="sb-weather-msg">날씨 정보 없음</span>'
+    }
+  }
+
+  function weatherEmoji(code) {
+    if (code === 113) return '☀️'
+    if (code === 116) return '⛅'
+    if ([119,122].includes(code)) return '☁️'
+    if ([143,248,260].includes(code)) return '🌫️'
+    if ([200,386,389,392,395].includes(code)) return '⛈️'
+    if ([179,182,185,227,230,323,326,329,332,335,338,350,362,365,368,371,374,377].includes(code)) return '❄️'
+    return '🌧️'
+  }
+
+  function translateWeather(desc) {
+    const m = {
+      'Sunny':'맑음','Clear':'맑음','Partly cloudy':'구름 조금','Partly Cloudy':'구름 조금',
+      'Cloudy':'흐림','Overcast':'흐림','Mist':'안개','Fog':'안개',
+      'Light rain':'가벼운 비','Moderate rain':'비','Heavy rain':'강한 비',
+      'Light drizzle':'이슬비','Heavy drizzle':'이슬비','Freezing drizzle':'이슬비',
+      'Light snow':'가벼운 눈','Moderate snow':'눈','Heavy snow':'강한 눈','Blizzard':'눈보라',
+      'Patchy rain possible':'비 가능','Patchy snow possible':'눈 가능',
+      'Thundery outbreaks possible':'천둥번개','Blowing snow':'눈보라',
+    }
+    return m[desc] || desc
+  }
+
+  // ── Calendar ───────────────────────────────────────────────────────────
+  function renderCalendar() {
+    const todayStr  = localDateStr(new Date())
+    const firstDay  = new Date(calYear, calMonth, 1)
+    const lastDay   = new Date(calYear, calMonth + 1, 0)
+    const startDow  = firstDay.getDay()  // 0=Sun
+    const daysInMon = lastDay.getDate()
+
+    const todosByDate = {}
+    todos.forEach(t => {
+      if (t.dueDate) {
+        if (!todosByDate[t.dueDate]) todosByDate[t.dueDate] = []
+        todosByDate[t.dueDate].push(t)
+      }
+    })
+
+    const cells = []
+    // Leading prev-month days
+    for (let i = 0; i < startDow; i++) {
+      const prevLast = new Date(calYear, calMonth, 0)
+      const d   = prevLast.getDate() - startDow + 1 + i
+      const py  = calMonth === 0 ? calYear - 1 : calYear
+      const pm  = calMonth === 0 ? 11 : calMonth - 1
+      cells.push({ day: d, dateStr: `${py}-${String(pm+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`, other: true })
+    }
+    // Current month
+    for (let d = 1; d <= daysInMon; d++) {
+      const ds = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`
+      cells.push({ day: d, dateStr: ds, other: false, todos: todosByDate[ds] || [] })
+    }
+    // Trailing next-month days
+    const rem = cells.length % 7 === 0 ? 0 : 7 - (cells.length % 7)
+    for (let i = 1; i <= rem; i++) {
+      const ny = calMonth === 11 ? calYear + 1 : calYear
+      const nm = calMonth === 11 ? 0 : calMonth + 1
+      cells.push({ day: i, dateStr: `${ny}-${String(nm+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`, other: true })
+    }
+
+    const DOW = ['일','월','화','수','목','금','토']
+    const headers = DOW.map((d,i) =>
+      `<div class="cal-dh${i===0?' sun':i===6?' sat':''}">$${d}</div>`
+    ).join('')
+
+    const cellsHtml = cells.map((c, i) => {
+      const col      = i % 7
+      const isToday  = !c.other && c.dateStr === todayStr
+      const hasTodos = !c.other && c.todos && c.todos.length > 0
+      const classes  = [
+        'cal-cell',
+        c.other ? 'other-month' : '',
+        isToday  ? 'today'      : '',
+        col === 0 ? 'sun-col'   : '',
+        col === 6 ? 'sat-col'   : '',
+        hasTodos ? 'has-todo'   : '',
+      ].filter(Boolean).join(' ')
+      const dots = hasTodos
+        ? c.todos.slice(0,3).map(t => `<span class="cal-dot cal-dot-${t.category}"></span>`).join('')
+        : ''
+      const click = hasTodos ? `onclick="showDayDetail('${c.dateStr}')"` : ''
+      return `
+        <div class="${classes}" ${click}>
+          <span class="cal-day">${c.day}</span>
+          ${dots ? `<div class="cal-dots">${dots}</div>` : ''}
+        </div>`
     }).join('')
-    document.getElementById('sb-cal').innerHTML=`<div class="cal-nav"><button class="cal-nav-btn" onclick="prevMonth()">‹</button><span class="cal-month-lbl">${calYear}년 ${calMonth+1}월</span><button class="cal-nav-btn" onclick="nextMonth()">›</button></div><div class="cal-grid">${headers}${cellsHtml}</div>`
-  }
-  function prevMonth(){calMonth--;if(calMonth<0){calMonth=11;calYear--}renderCalendar()}
-  function nextMonth(){calMonth++;if(calMonth>11){calMonth=0;calYear++}renderCalendar()}
 
-  function showDayDetail(dateStr){
-    dayDetailDate=dateStr
-    const d=new Date(dateStr+'T00:00:00')
-    document.getElementById('day-modal-title').textContent=d.toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric',weekday:'long'})
-    refreshDayDetail();document.getElementById('day-modal').classList.remove('hidden')
+    document.getElementById('sb-cal').innerHTML = `
+      <div class="cal-nav">
+        <button class="cal-nav-btn" onclick="prevMonth()">‹</button>
+        <span class="cal-month-lbl">${calYear}년 ${calMonth+1}월</span>
+        <button class="cal-nav-btn" onclick="nextMonth()">›</button>
+      </div>
+      <div class="cal-grid">${headers}${cellsHtml}</div>`
   }
-  function refreshDayDetail(){
-    const dayTodos=todos.filter(t=>t.dueDate===dayDetailDate)
-    const body=document.getElementById('day-modal-body')
-    if(!dayTodos.length){body.innerHTML='<p class="day-empty">이 날짜에 등록된 할 일이 없습니다.</p>';return}
-    body.innerHTML=dayTodos.map(t=>`<div class="day-todo-item${t.completed?' done':''}"><input type="checkbox" class="day-todo-chk" ${t.completed?'checked':''} onchange="toggleTodoFromDay('${t.id}')"><span class="day-todo-text">${esc(t.text)}</span><span class="item-badge c-${t.category}">${CAT_LABEL[t.category]}</span></div>`).join('')
-  }
-  function closeDayDetail(){document.getElementById('day-modal').classList.add('hidden');dayDetailDate=null}
-  function toggleTodoFromDay(id){todos=todos.map(t=>t.id===id?{...t,completed:!t.completed}:t);saveTodos();renderTodoPage();renderCalendar();if(dayDetailDate)refreshDayDetail()}
 
-  function initMoodFilter(){const sel=document.getElementById('mood-filter');MOODS.forEach(m=>{const o=document.createElement('option');o.value=o.textContent=m;sel.appendChild(o)})}
-  function initMoodGrid(){document.getElementById('mood-grid').innerHTML=MOODS.map(m=>`<button class="mood-btn" data-mood="${m}" onclick="selectMood('${m}',this)">${m}</button>`).join('')}
-  function selectMood(m,btn){selMood=m;document.querySelectorAll('.mood-btn').forEach(b=>b.classList.remove('sel'));btn.classList.add('sel')}
-  function filterDiary(){diarySearch=document.getElementById('diary-search').value.toLowerCase();moodFilter=document.getElementById('mood-filter').value;renderDiaryPage()}
-  function renderDiaryPage(){
-    const filtered=diaries.filter(e=>{const okMood=!moodFilter||e.mood===moodFilter;const okSearch=!diarySearch||e.content?.toLowerCase().includes(diarySearch)||e.thanks?.some(t=>t?.toLowerCase().includes(diarySearch));return okMood&&okSearch}).sort((a,b)=>b.date>a.date?1:-1)
-    document.getElementById('diary-sub').textContent=`총 ${diaries.length}개의 일기`
-    const grid=document.getElementById('diary-grid')
-    if(!filtered.length){grid.innerHTML=`<div class="empty-state"><span class="empty-icon">📖</span><p>일기가 없습니다.</p><p>오늘의 감사한 일을 기록해보세요!</p></div>`;return}
-    grid.innerHTML=filtered.map(e=>`<div class="diary-card"><div class="card-top"><span class="card-mood">${e.mood||'📔'}</span><span class="card-date">${e.date}</span><div class="card-actions"><button class="action-btn" onclick="openDiaryForm('${e.id}')">✏️</button><button class="action-btn" onclick="delDiary('${e.id}')">🗑</button></div></div>${e.content?`<p class="card-content">${escBr(e.content)}</p>`:''}${e.thanks?.some(t=>t)?`<div class="card-thanks"><p class="thanks-label">✨ 감사한 일</p><ul>${e.thanks.filter(t=>t).map(t=>`<li>${esc(t)}</li>`).join('')}</ul></div>`:''}</div>`).join('')
+  function prevMonth() {
+    calMonth--; if (calMonth < 0) { calMonth = 11; calYear-- }
+    renderCalendar()
   }
-  function openDiaryForm(id=null){
-    editDiaryId=id;const e=id?diaries.find(d=>d.id===id):null
-    document.getElementById('form-title').textContent=id?'일기 수정':'새 일기'
-    document.getElementById('f-date').value=e?.date||localDateStr(new Date())
-    document.getElementById('f-content').value=e?.content||''
-    const thanks=e?.thanks||['','','']
-    ;[0,1,2].forEach(i=>document.getElementById('f-t'+i).value=thanks[i]||'')
-    selMood=e?.mood||'';document.querySelectorAll('.mood-btn').forEach(b=>b.classList.toggle('sel',b.dataset.mood===selMood))
+  function nextMonth() {
+    calMonth++; if (calMonth > 11) { calMonth = 0; calYear++ }
+    renderCalendar()
+  }
+
+  // ── Day Detail ─────────────────────────────────────────────────────────
+  function showDayDetail(dateStr) {
+    dayDetailDate = dateStr
+    const d = new Date(dateStr + 'T00:00:00')
+    document.getElementById('day-modal-title').textContent =
+      d.toLocaleDateString('ko-KR', { year:'numeric', month:'long', day:'numeric', weekday:'long' })
+    refreshDayDetail()
+    document.getElementById('day-modal').classList.remove('hidden')
+  }
+
+  function refreshDayDetail() {
+    const dayTodos = todos.filter(t => t.dueDate === dayDetailDate)
+    const body = document.getElementById('day-modal-body')
+    if (!dayTodos.length) {
+      body.innerHTML = '<p class="day-empty">이 날짜에 등록된 할 일이 없습니다.</p>'
+      return
+    }
+    body.innerHTML = dayTodos.map(t => `
+      <div class="day-todo-item${t.completed ? ' done' : ''}">
+        <input type="checkbox" class="day-todo-chk" ${t.completed ? 'checked' : ''}
+          onchange="toggleTodoFromDay('${t.id}')">
+        <span class="day-todo-text">${esc(t.text)}</span>
+        <span class="item-badge c-${t.category}">${CAT_LABEL[t.category]}</span>
+      </div>`).join('')
+  }
+
+  function closeDayDetail() {
+    document.getElementById('day-modal').classList.add('hidden')
+    dayDetailDate = null
+  }
+
+  function toggleTodoFromDay(id) {
+    todos = todos.map(t => t.id === id ? {...t, completed: !t.completed} : t)
+    saveTodos()
+    renderTodoPage()
+    renderCalendar()
+    if (dayDetailDate) refreshDayDetail()
+  }
+
+  // ── DIARY ──────────────────────────────────────────────────────────────
+  function initMoodFilter() {
+    const sel = document.getElementById('mood-filter')
+    MOODS.forEach(m => {
+      const o = document.createElement('option')
+      o.value = o.textContent = m
+      sel.appendChild(o)
+    })
+  }
+  function initMoodGrid() {
+    document.getElementById('mood-grid').innerHTML =
+      MOODS.map(m => `<button class="mood-btn" data-mood="${m}" onclick="selectMood('${m}',this)">${m}</button>`).join('')
+  }
+  function selectMood(m, btn) {
+    selMood = m
+    document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('sel'))
+    btn.classList.add('sel')
+  }
+  function filterDiary() {
+    diarySearch = document.getElementById('diary-search').value.toLowerCase()
+    moodFilter  = document.getElementById('mood-filter').value
+    renderDiaryPage()
+  }
+  function renderDiaryPage() {
+    const filtered = diaries.filter(e => {
+      const okMood   = !moodFilter  || e.mood === moodFilter
+      const okSearch = !diarySearch ||
+        e.content?.toLowerCase().includes(diarySearch) ||
+        e.thanks?.some(t => t?.toLowerCase().includes(diarySearch))
+      return okMood && okSearch
+    }).sort((a,b) => b.date > a.date ? 1 : -1)
+
+    document.getElementById('diary-sub').textContent = `총 ${diaries.length}개의 일기`
+    const grid = document.getElementById('diary-grid')
+    if (!filtered.length) {
+      grid.innerHTML = `<div class="empty-state"><span class="empty-icon">📖</span><p>일기가 없습니다.</p><p>오늘의 감사한 일을 기록해보세요!</p></div>`
+      return
+    }
+    grid.innerHTML = filtered.map(e => `
+      <div class="diary-card">
+        <div class="card-top">
+          <span class="card-mood">${e.mood || '📔'}</span>
+          <span class="card-date">${e.date}</span>
+          <div class="card-actions">
+            <button class="action-btn" onclick="openDiaryForm('${e.id}')">✏️</button>
+            <button class="action-btn" onclick="delDiary('${e.id}')">🗑</button>
+          </div>
+        </div>
+        ${e.content ? `<p class="card-content">${escBr(e.content)}</p>` : ''}
+        ${e.thanks?.some(t=>t) ? `
+          <div class="card-thanks">
+            <p class="thanks-label">✨ 감사한 일</p>
+            <ul>${e.thanks.filter(t=>t).map(t=>`<li>${esc(t)}</li>`).join('')}</ul>
+          </div>` : ''}
+      </div>`).join('')
+  }
+  function openDiaryForm(id = null) {
+    editDiaryId = id
+    const e = id ? diaries.find(d=>d.id===id) : null
+    document.getElementById('form-title').textContent = id ? '일기 수정' : '새 일기'
+    document.getElementById('f-date').value    = e?.date    || localDateStr(new Date())
+    document.getElementById('f-content').value = e?.content || ''
+    const thanks = e?.thanks || ['','','']
+    ;[0,1,2].forEach(i => document.getElementById('f-t'+i).value = thanks[i]||'')
+    selMood = e?.mood || ''
+    document.querySelectorAll('.mood-btn').forEach(b => b.classList.toggle('sel', b.dataset.mood === selMood))
     document.getElementById('diary-modal').classList.remove('hidden')
   }
-  function closeDiaryForm(){document.getElementById('diary-modal').classList.add('hidden');editDiaryId=null}
-  function saveDiary(){
-    const date=document.getElementById('f-date').value;if(!date)return
-    const entry={date,content:document.getElementById('f-content').value.trim(),thanks:[0,1,2].map(i=>document.getElementById('f-t'+i).value.trim()),mood:selMood}
-    if(editDiaryId)diaries=diaries.map(e=>e.id===editDiaryId?{...e,...entry}:e)
-    else diaries.push({id:crypto.randomUUID(),...entry,createdAt:Date.now()})
-    saveDiaries();renderDiaryPage();updateSbStats();closeDiaryForm()
+  function closeDiaryForm() {
+    document.getElementById('diary-modal').classList.add('hidden')
+    editDiaryId = null
   }
-  function delDiary(id){if(!confirm('정말 삭제하시겠습니까?'))return;diaries=diaries.filter(e=>e.id!==id);saveDiaries();renderDiaryPage();updateSbStats()}
-
-  function detectCat(text){for(const cat of CATS){if([...DEFAULT_KW[cat],...(customKw[cat]||[])].some(kw=>text.includes(kw)))return cat}return null}
-  function onTodoInput(){if(userOverrode)return;const det=detectCat(document.getElementById('todo-inp').value);const badge=document.getElementById('auto-badge');if(det){document.getElementById('cat-sel').value=det;badge.style.visibility='visible'}else badge.style.visibility='hidden'}
-  function onCatManual(){userOverrode=true;document.getElementById('auto-badge').style.visibility='hidden'}
-  function addTodo(){
-    const inp=document.getElementById('todo-inp'),text=inp.value.trim()
-    if(!text){inp.classList.add('shake');inp.focus();setTimeout(()=>inp.classList.remove('shake'),500);return}
-    const dueDate=document.getElementById('todo-due').value||null
-    todos.push({id:crypto.randomUUID(),text,category:document.getElementById('cat-sel').value,completed:false,createdAt:Date.now(),dueDate})
-    inp.value='';document.getElementById('todo-due').value=''
-    document.getElementById('auto-badge').style.visibility='hidden'
-    userOverrode=false;inp.focus();saveTodos();renderTodoPage();renderCalendar()
+  function saveDiary() {
+    const date    = document.getElementById('f-date').value
+    const content = document.getElementById('f-content').value.trim()
+    const thanks  = [0,1,2].map(i => document.getElementById('f-t'+i).value.trim())
+    if (!date) return
+    if (editDiaryId) {
+      diaries = diaries.map(e => e.id===editDiaryId ? {...e, date, content, thanks, mood:selMood} : e)
+    } else {
+      diaries.push({ id:crypto.randomUUID(), date, content, thanks, mood:selMood, createdAt:Date.now() })
+    }
+    saveDiaries(); renderDiaryPage(); updateSbStats(); closeDiaryForm()
   }
-  function toggleTodo(id){todos=todos.map(t=>t.id===id?{...t,completed:!t.completed}:t);saveTodos();renderTodoPage();renderCalendar()}
-  function delTodo(id){todos=todos.filter(t=>t.id!==id);saveTodos();renderTodoPage();renderCalendar()}
-  function startEdit(id){editTodoId=id;renderTodoPage();const inp=document.getElementById('ei-'+id);if(inp){inp.focus();inp.select()}}
-  function commitEdit(id){const inp=document.getElementById('ei-'+id);if(inp?.value.trim())todos=todos.map(t=>t.id===id?{...t,text:inp.value.trim()}:t);editTodoId=null;saveTodos();renderTodoPage()}
-  function cancelEdit(){editTodoId=null;renderTodoPage()}
-  function clearDone(){todos=todos.filter(t=>!t.completed);saveTodos();renderTodoPage();renderCalendar()}
-  function setFilter(f,btn){todoFilter=f;document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderTodoPage()}
-  function renderTodoPage(){
-    const filtered=todoFilter==='all'?todos:todos.filter(t=>t.category===todoFilter)
-    const total=todos.length,done=todos.filter(t=>t.completed).length,pct=total===0?0:Math.round(done/total*100)
-    document.getElementById('prog-text').textContent=`${done} / ${total} 완료`
-    document.getElementById('prog-pct').textContent=`${pct}%`
-    const pf=document.getElementById('prog-fill');pf.style.width=pct+'%';pf.className='prog-fill'+(pct===100?' done':'')
-    CATS.forEach(cat=>{const ct=todos.filter(t=>t.category===cat),cd=ct.filter(t=>t.completed).length,cp=ct.length===0?0:Math.round(cd/ct.length*100);document.getElementById('cf-'+cat).style.width=cp+'%';document.getElementById('cc-'+cat).textContent=ct.length===0?'항목 없음':`${cd}/${ct.length}`})
-    document.getElementById('todo-count').textContent=(todoFilter==='all'?'총':CAT_LABEL[todoFilter])+` ${filtered.length}개`
-    document.getElementById('btn-clear').disabled=!todos.some(t=>t.completed)
-    const list=document.getElementById('todo-list')
-    if(!filtered.length){list.innerHTML='<li class="todo-empty">할 일이 없습니다. 새 항목을 추가해보세요!</li>';return}
-    list.innerHTML=filtered.map(t=>{const due=fmtDue(t.dueDate);return`<li class="todo-item${t.completed?' done':''}"><input type="checkbox" class="todo-chk" ${t.completed?'checked':''} onchange="toggleTodo('${t.id}')"><div class="item-body">${editTodoId===t.id?`<input id="ei-${t.id}" class="item-edit-inp" value="${esc(t.text)}" onkeydown="if(event.key==='Enter')commitEdit('${t.id}');if(event.key==='Escape')cancelEdit()" onblur="commitEdit('${t.id}')">`:`<span class="item-text">${esc(t.text)}</span>`}${due?`<span class="due-badge ${due.cls}">📅 ${due.text}</span>`:''}</div><span class="item-badge c-${t.category}">${CAT_LABEL[t.category]}</span><button class="btn-edit" onclick="startEdit('${t.id}')">수정</button><button class="btn-del" onclick="delTodo('${t.id}')">🗑</button></li>`}).join('')
+  function delDiary(id) {
+    if (!confirm('정말 삭제하시겠습니까?')) return
+    diaries = diaries.filter(e => e.id !== id)
+    saveDiaries(); renderDiaryPage(); updateSbStats()
   }
 
-  function openKwModal(){renderKwModal();document.getElementById('kw-modal').classList.remove('hidden')}
-  function closeKwModal(){document.getElementById('kw-modal').classList.add('hidden')}
-  function renderKwModal(){
-    document.getElementById('kw-body').innerHTML=CATS.map(cat=>`<div class="kw-section"><div class="kw-sec-hd"><span class="cat-badge c-${cat}">${CAT_ICON[cat]} ${CAT_LABEL[cat]}</span><span class="kw-default-note">기본 ${DEFAULT_KW[cat].length}개 포함</span></div>${customKw[cat].length>0?`<div class="kw-chips">${customKw[cat].map(kw=>`<span class="kw-chip">${esc(kw)}<button class="kw-del" data-cat="${cat}" data-kw="${esc(kw)}" onclick="removeKw(this)">×</button></span>`).join('')}</div>`:''}<div class="kw-add-row"><input class="kw-add-inp" id="kwi-${cat}" type="text" placeholder="새 키워드 입력" onkeydown="if(event.key==='Enter')addKw('${cat}')"><button class="kw-add-${cat}" onclick="addKw('${cat}')">+ 추가</button></div></div>`).join('')
+  // ── TODO ───────────────────────────────────────────────────────────────
+  function detectCat(text) {
+    for (const cat of CATS) {
+      const all = [...DEFAULT_KW[cat], ...(customKw[cat]||[])]
+      if (all.some(kw => text.includes(kw))) return cat
+    }
+    return null
   }
-  function addKw(cat){const inp=document.getElementById('kwi-'+cat),kw=inp.value.trim();if(!kw||DEFAULT_KW[cat].includes(kw)||customKw[cat].includes(kw)){inp.value='';return}customKw[cat]=[...customKw[cat],kw];inp.value='';saveKw();renderKwModal()}
-  function removeKw(btn){const{cat,kw}=btn.dataset;customKw[cat]=customKw[cat].filter(k=>k!==kw);saveKw();renderKwModal()}
+  function onTodoInput() {
+    if (userOverrode) return
+    const det   = detectCat(document.getElementById('todo-inp').value)
+    const badge = document.getElementById('auto-badge')
+    if (det) { document.getElementById('cat-sel').value = det; badge.style.visibility = 'visible' }
+    else     { badge.style.visibility = 'hidden' }
+  }
+  function onCatManual() {
+    userOverrode = true
+    document.getElementById('auto-badge').style.visibility = 'hidden'
+  }
+  function addTodo() {
+    const inp  = document.getElementById('todo-inp')
+    const text = inp.value.trim()
+    if (!text) {
+      inp.classList.add('shake'); inp.focus()
+      setTimeout(() => inp.classList.remove('shake'), 500)
+      return
+    }
+    const dueDate = document.getElementById('todo-due').value || null
+    todos.push({
+      id: crypto.randomUUID(), text,
+      category: document.getElementById('cat-sel').value,
+      completed: false, createdAt: Date.now(), dueDate
+    })
+    inp.value = ''
+    document.getElementById('todo-due').value = ''
+    document.getElementById('auto-badge').style.visibility = 'hidden'
+    userOverrode = false
+    inp.focus()
+    saveTodos(); renderTodoPage(); renderCalendar()
+  }
+  function toggleTodo(id) {
+    todos = todos.map(t => t.id===id ? {...t, completed:!t.completed} : t)
+    saveTodos(); renderTodoPage(); renderCalendar()
+  }
+  function delTodo(id) {
+    todos = todos.filter(t => t.id!==id)
+    saveTodos(); renderTodoPage(); renderCalendar()
+  }
+  function startEdit(id) {
+    editTodoId = id; renderTodoPage()
+    const inp = document.getElementById('ei-'+id)
+    if (inp) { inp.focus(); inp.select() }
+  }
+  function commitEdit(id) {
+    const inp = document.getElementById('ei-'+id)
+    if (inp?.value.trim()) todos = todos.map(t => t.id===id ? {...t, text:inp.value.trim()} : t)
+    editTodoId = null; saveTodos(); renderTodoPage()
+  }
+  function cancelEdit() { editTodoId = null; renderTodoPage() }
+  function clearDone() {
+    todos = todos.filter(t => !t.completed)
+    saveTodos(); renderTodoPage(); renderCalendar()
+  }
+  function setFilter(f, btn) {
+    todoFilter = f
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'))
+    btn.classList.add('active')
+    renderTodoPage()
+  }
+  function renderTodoPage() {
+    const filtered = todoFilter==='all' ? todos : todos.filter(t=>t.category===todoFilter)
+    const total    = todos.length
+    const done     = todos.filter(t=>t.completed).length
+    const pct      = total===0 ? 0 : Math.round(done/total*100)
+    const hasDone  = todos.some(t=>t.completed)
+
+    document.getElementById('prog-text').textContent = `${done} / ${total} 완료`
+    document.getElementById('prog-pct').textContent  = `${pct}%`
+    const pf = document.getElementById('prog-fill')
+    pf.style.width = pct + '%'
+    pf.className   = 'prog-fill' + (pct===100 ? ' done' : '')
+
+    CATS.forEach(cat => {
+      const ct = todos.filter(t=>t.category===cat)
+      const cd = ct.filter(t=>t.completed).length
+      const cp = ct.length===0 ? 0 : Math.round(cd/ct.length*100)
+      document.getElementById('cf-'+cat).style.width   = cp + '%'
+      document.getElementById('cc-'+cat).textContent   = ct.length===0 ? '항목 없음' : `${cd}/${ct.length}`
+    })
+
+    document.getElementById('todo-count').textContent = (todoFilter==='all' ? '총' : CAT_LABEL[todoFilter]) + ` ${filtered.length}개`
+    document.getElementById('btn-clear').disabled = !hasDone
+
+    const list = document.getElementById('todo-list')
+    if (!filtered.length) {
+      list.innerHTML = '<li class="todo-empty">할 일이 없습니다. 새 항목을 추가해보세요!</li>'
+      return
+    }
+    list.innerHTML = filtered.map(t => {
+      const due = fmtDue(t.dueDate)
+      return `
+        <li class="todo-item${t.completed?' done':''}">
+          <input type="checkbox" class="todo-chk" ${t.completed?'checked':''} onchange="toggleTodo('${t.id}')">
+          <div class="item-body">
+            ${editTodoId===t.id
+              ? `<input id="ei-${t.id}" class="item-edit-inp" value="${esc(t.text)}"
+                   onkeydown="if(event.key==='Enter')commitEdit('${t.id}');if(event.key==='Escape')cancelEdit()"
+                   onblur="commitEdit('${t.id}')">`
+              : `<span class="item-text">${esc(t.text)}</span>`
+            }
+            ${due ? `<span class="due-badge ${due.cls}">📅 ${due.text}</span>` : ''}
+          </div>
+          <span class="item-badge c-${t.category}">${CAT_LABEL[t.category]}</span>
+          <button class="btn-edit" onclick="startEdit('${t.id}')">수정</button>
+          <button class="btn-del"  onclick="delTodo('${t.id}')">🗑</button>
+        </li>`
+    }).join('')
+  }
+
+  // ── KEYWORD MODAL ──────────────────────────────────────────────────────
+  function openKwModal()  { renderKwModal(); document.getElementById('kw-modal').classList.remove('hidden') }
+  function closeKwModal() { document.getElementById('kw-modal').classList.add('hidden') }
+  function renderKwModal() {
+    document.getElementById('kw-body').innerHTML = CATS.map(cat => `
+      <div class="kw-section">
+        <div class="kw-sec-hd">
+          <span class="cat-badge c-${cat}">${CAT_ICON[cat]} ${CAT_LABEL[cat]}</span>
+          <span class="kw-default-note">기본 ${DEFAULT_KW[cat].length}개 포함</span>
+        </div>
+        ${customKw[cat].length > 0 ? `
+          <div class="kw-chips">
+            ${customKw[cat].map(kw => `
+              <span class="kw-chip">${esc(kw)}
+                <button class="kw-del" data-cat="${cat}" data-kw="${esc(kw)}" onclick="removeKw(this)">×</button>
+              </span>`).join('')}
+          </div>` : ''}
+        <div class="kw-add-row">
+          <input class="kw-add-inp" id="kwi-${cat}" type="text" placeholder="새 키워드 입력"
+            onkeydown="if(event.key==='Enter')addKw('${cat}')">
+          <button class="kw-add-${cat}" onclick="addKw('${cat}')">+ 추가</button>
+        </div>
+      </div>`).join('')
+  }
+  function addKw(cat) {
+    const inp = document.getElementById('kwi-'+cat)
+    const kw  = inp.value.trim()
+    if (!kw || DEFAULT_KW[cat].includes(kw) || customKw[cat].includes(kw)) { inp.value=''; return }
+    customKw[cat] = [...customKw[cat], kw]
+    inp.value = ''
+    saveKw(); renderKwModal()
+  }
+  function removeKw(btn) {
+    const { cat, kw } = btn.dataset
+    customKw[cat] = customKw[cat].filter(k => k !== kw)
+    saveKw(); renderKwModal()
+  }
+
+  // ── Keyboard shortcuts ─────────────────────────────────────────────────
+  document.addEventListener('keydown', e => {
+    const tag = document.activeElement.tagName
+    const inInput = tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT'
+    const anyModalOpen = !document.getElementById('diary-modal').classList.contains('hidden') ||
+                         !document.getElementById('kw-modal').classList.contains('hidden') ||
+                         !document.getElementById('day-modal').classList.contains('hidden')
+
+    // Escape: 열린 모달 닫기
+    if (e.key === 'Escape') {
+      if (!document.getElementById('diary-modal').classList.contains('hidden')) { closeDiaryForm(); return }
+      if (!document.getElementById('kw-modal').classList.contains('hidden'))    { closeKwModal();  return }
+      if (!document.getElementById('day-modal').classList.contains('hidden'))   { closeDayDetail(); return }
+    }
+
+    if (inInput || anyModalOpen) return
+
+    // Ctrl+1: 일기 탭
+    if (e.ctrlKey && e.key === '1') {
+      e.preventDefault()
+      const btn = document.querySelector('.sb-btn')
+      switchPage('diary', btn)
+    }
+    // Ctrl+2: 할 일 탭
+    if (e.ctrlKey && e.key === '2') {
+      e.preventDefault()
+      const btn = document.querySelectorAll('.sb-btn')[1]
+      switchPage('todo', btn)
+    }
+    // Ctrl+N: 현재 탭에서 새 항목
+    if (e.ctrlKey && e.key === 'n') {
+      e.preventDefault()
+      const todoActive = document.getElementById('page-todo').classList.contains('active')
+      if (todoActive) {
+        document.getElementById('todo-inp').focus()
+      } else {
+        openDiaryForm()
+      }
+    }
+  })
 </script>
 </body>
 </html>
