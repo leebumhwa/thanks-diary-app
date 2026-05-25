@@ -254,7 +254,7 @@
     .diary-card {
       background: var(--surface); border: 1px solid var(--border);
       border-radius: 14px; padding: 20px; box-shadow: var(--shadow);
-      transition: box-shadow 0.2s, transform 0.15s; cursor: pointer;
+      transition: box-shadow 0.2s, transform 0.15s;
     }
     .diary-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
     .card-top { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
@@ -278,6 +278,8 @@
     .thanks-label { font-size: 12px; font-weight: 700; color: var(--primary); margin-bottom: 6px; }
     .card-thanks ul { padding-left: 14px; display: flex; flex-direction: column; gap: 4px; }
     .card-thanks li { font-size: 13px; color: var(--text2); list-style: disc; }
+    .diary-card { cursor: pointer; }
+    .diary-card .card-actions button { cursor: pointer; }
     .view-meta { display: flex; align-items: center; gap: 10px; }
     .view-mood { font-size: 36px; }
     .view-date { font-size: 15px; color: var(--text2); font-weight: 600; }
@@ -1118,7 +1120,7 @@
 
     const DOW = ['일','월','화','수','목','금','토']
     const headers = DOW.map((d,i) =>
-      `<div class="cal-dh${i===0?' sun':i===6?' sat':''}">${ d}</div>`
+      `<div class="cal-dh${i===0?' sun':i===6?' sat':''}">${d}</div>`
     ).join('')
 
     const cellsHtml = cells.map((c, i) => {
@@ -1296,7 +1298,7 @@
     document.getElementById('form-title').textContent = id ? '일기 수정' : '새 일기'
     document.getElementById('f-date').value    = e?.date    || localDateStr(new Date())
     document.getElementById('f-content').value = e?.content || ''
-    const thanks = e?.thanks || ['',''','']
+    const thanks = e?.thanks || ['','','']
     ;[0,1,2].forEach(i => document.getElementById('f-t'+i).value = thanks[i]||'')
     selMood = e?.mood || ''
     document.querySelectorAll('.mood-btn').forEach(b => b.classList.toggle('sel', b.dataset.mood === selMood))
