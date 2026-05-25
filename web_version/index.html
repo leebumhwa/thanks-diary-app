@@ -254,7 +254,7 @@
     .diary-card {
       background: var(--surface); border: 1px solid var(--border);
       border-radius: 14px; padding: 20px; box-shadow: var(--shadow);
-      transition: box-shadow 0.2s, transform 0.15s;
+      transition: box-shadow 0.2s, transform 0.15s; cursor: pointer;
     }
     .diary-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
     .card-top { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
@@ -278,6 +278,14 @@
     .thanks-label { font-size: 12px; font-weight: 700; color: var(--primary); margin-bottom: 6px; }
     .card-thanks ul { padding-left: 14px; display: flex; flex-direction: column; gap: 4px; }
     .card-thanks li { font-size: 13px; color: var(--text2); list-style: disc; }
+    .view-meta { display: flex; align-items: center; gap: 10px; }
+    .view-mood { font-size: 36px; }
+    .view-date { font-size: 15px; color: var(--text2); font-weight: 600; }
+    .view-content { font-size: 15px; color: var(--text2); line-height: 1.85; white-space: pre-wrap; }
+    .view-thanks { background: var(--surface2); border-radius: 10px; padding: 14px 18px; }
+    .view-thanks-label { font-size: 13px; font-weight: 700; color: var(--primary); margin-bottom: 8px; }
+    .view-thanks ul { padding-left: 16px; display: flex; flex-direction: column; gap: 6px; }
+    .view-thanks li { font-size: 14px; color: var(--text2); list-style: disc; }
 
     /* Modal */
     .modal-bg {
@@ -769,6 +777,20 @@
   </div>
 </div>
 
+<!-- DIARY VIEW MODAL -->
+<div class="modal-bg hidden" id="view-modal" onclick="if(event.target===this)closeDiaryView()">
+  <div class="modal-box">
+    <div class="modal-hd">
+      <h3 id="view-title">📔 일기 보기</h3>
+      <div style="display:flex;gap:6px;align-items:center">
+        <button class="modal-close" id="view-edit-btn" title="수정" onclick="openViewEdit()">✏️</button>
+        <button class="modal-close" onclick="closeDiaryView()">✕</button>
+      </div>
+    </div>
+    <div class="modal-body" id="view-body"></div>
+  </div>
+</div>
+
 <!-- KEYWORD MODAL -->
 <div class="modal-bg hidden" id="kw-modal" onclick="if(event.target===this)closeKwModal()">
   <div class="modal-box kw-modal-box">
@@ -1096,7 +1118,7 @@
 
     const DOW = ['일','월','화','수','목','금','토']
     const headers = DOW.map((d,i) =>
-      `<div class="cal-dh${i===0?' sun':i===6?' sat':''}">$d}</div>`
+      `<div class="cal-dh${i===0?' sun':i===6?' sat':''}">${ d}</div>`
     ).join('')
 
     const cellsHtml = cells.map((c, i) => {
@@ -1220,13 +1242,13 @@
       return
     }
     grid.innerHTML = filtered.map(e => `
-      <div class="diary-card">
+      <div class="diary-card" onclick="openDiaryView('${e.id}')">
         <div class="card-top">
           <span class="card-mood">${e.mood || '📔'}</span>
           <span class="card-date">${e.date}</span>
           <div class="card-actions">
-            <button class="action-btn" onclick="openDiaryForm('${e.id}')">✏️</button>
-            <button class="action-btn" onclick="delDiary('${e.id}')">🗑</button>
+            <button class="action-btn" onclick="event.stopPropagation();openDiaryForm('${e.id}')">✏️</button>
+            <button class="action-btn" onclick="event.stopPropagation();delDiary('${e.id}')">🗑</button>
           </div>
         </div>
         ${e.content ? `<p class="card-content">${escBr(e.content)}</p>` : ''}
@@ -1237,13 +1259,44 @@
           </div>` : ''}
       </div>`).join('')
   }
+  let viewDiaryId = null
+  function openDiaryView(id) {
+    viewDiaryId = id
+    const e = diaries.find(d => d.id === id)
+    if (!e) return
+    document.getElementById('view-title').textContent = e.date
+    const body = document.getElementById('view-body')
+    body.innerHTML = `
+      <div class="view-meta">
+        <span class="view-mood">${e.mood || '📔'}</span>
+        <span class="view-date">${e.date}</span>
+      </div>
+      ${e.content ? `<p class="view-content">${escBr(e.content)}</p>` : '<p style="color:var(--text3);font-size:14px">내용 없음</p>'}
+      ${e.thanks?.some(t=>t) ? `
+        <div class="view-thanks">
+          <p class="view-thanks-label">✨ 감사한 일</p>
+          <ul>${e.thanks.filter(t=>t).map(t=>`<li>${esc(t)}</li>`).join('')}</ul>
+        </div>` : ''}
+    `
+    document.getElementById('view-modal').classList.remove('hidden')
+  }
+  function closeDiaryView() {
+    document.getElementById('view-modal').classList.add('hidden')
+    viewDiaryId = null
+  }
+  function openViewEdit() {
+    const id = viewDiaryId
+    closeDiaryView()
+    openDiaryForm(id)
+  }
+
   function openDiaryForm(id = null) {
     editDiaryId = id
     const e = id ? diaries.find(d=>d.id===id) : null
     document.getElementById('form-title').textContent = id ? '일기 수정' : '새 일기'
     document.getElementById('f-date').value    = e?.date    || localDateStr(new Date())
     document.getElementById('f-content').value = e?.content || ''
-    const thanks = e?.thanks || ['','','']
+    const thanks = e?.thanks || ['',''','']
     ;[0,1,2].forEach(i => document.getElementById('f-t'+i).value = thanks[i]||'')
     selMood = e?.mood || ''
     document.querySelectorAll('.mood-btn').forEach(b => b.classList.toggle('sel', b.dataset.mood === selMood))
@@ -1457,11 +1510,13 @@
     const tag = document.activeElement.tagName
     const inInput = tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT'
     const anyModalOpen = !document.getElementById('diary-modal').classList.contains('hidden') ||
+                         !document.getElementById('view-modal').classList.contains('hidden') ||
                          !document.getElementById('kw-modal').classList.contains('hidden') ||
                          !document.getElementById('day-modal').classList.contains('hidden')
 
     // Escape: 열린 모달 닫기
     if (e.key === 'Escape') {
+      if (!document.getElementById('view-modal').classList.contains('hidden'))  { closeDiaryView(); return }
       if (!document.getElementById('diary-modal').classList.contains('hidden')) { closeDiaryForm(); return }
       if (!document.getElementById('kw-modal').classList.contains('hidden'))    { closeKwModal();  return }
       if (!document.getElementById('day-modal').classList.contains('hidden'))   { closeDayDetail(); return }
