@@ -441,6 +441,41 @@
     .kw-link:hover { color: var(--primary); }
 
     /* Filter tabs */
+    /* View tabs (할 일 / 완료) */
+    .view-tabs { display: flex; border-radius: 10px; overflow: hidden; border: 1.5px solid var(--border); background: var(--surface2); }
+    .view-tab {
+      flex: 1; padding: 9px 0; font-size: 14px; font-weight: 600;
+      color: var(--text3); transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    .view-tab.active { background: var(--primary); color: #fff; }
+    .view-cnt {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-width: 20px; height: 20px; padding: 0 5px; border-radius: 999px;
+      font-size: 11px; font-weight: 700; background: rgba(255,255,255,0.25);
+    }
+    .view-tab:not(.active) .view-cnt { background: var(--border); color: var(--text3); }
+    /* Edit mode inline */
+    .edit-wrap { display: flex; flex-direction: column; gap: 6px; width: 100%; }
+    .edit-due-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .edit-due-lbl { font-size: 12px; color: var(--text3); white-space: nowrap; }
+    .edit-due-inp {
+      padding: 5px 8px; border: 1.5px solid var(--border); border-radius: 7px;
+      background: var(--surface2); color: var(--text); font-size: 12px; outline: none; transition: border-color 0.2s;
+    }
+    .edit-due-inp:focus { border-color: var(--work); }
+    .edit-due-clr { font-size: 15px; color: var(--text3); padding: 1px 4px; border-radius: 4px; transition: color 0.15s; }
+    .edit-due-clr:hover { color: #EF4444; }
+    .edit-actions { display: flex; gap: 6px; }
+    .edit-save-btn {
+      padding: 5px 12px; border-radius: 7px; font-size: 12px; font-weight: 700;
+      background: var(--primary); color: #fff; transition: opacity 0.15s;
+    }
+    .edit-save-btn:hover { opacity: 0.85; }
+    .edit-cancel-btn {
+      padding: 5px 12px; border: 1.5px solid var(--border); border-radius: 7px;
+      font-size: 12px; font-weight: 600; color: var(--text3); transition: all 0.2s;
+    }
+    .edit-cancel-btn:hover { border-color: #EF4444; color: #EF4444; }
     .filter-tabs { display: flex; gap: 6px; flex-wrap: wrap; }
     .filter-btn {
       padding: 7px 14px; border-radius: 999px; font-size: 13px; font-weight: 600;
@@ -689,6 +724,11 @@
             <button class="kw-link" onclick="openKwModal()">⚙️ 자동 분류 키워드 설정</button>
           </div>
 
+          <div class="view-tabs">
+            <button class="view-tab active" id="vt-active"    onclick="setTodoView('active')">할 일 <span class="view-cnt" id="vt-cnt-active">0</span></button>
+            <button class="view-tab"        id="vt-completed" onclick="setTodoView('completed')">완료 <span class="view-cnt" id="vt-cnt-completed">0</span></button>
+          </div>
+
           <div class="filter-tabs">
             <button class="filter-btn active"     onclick="setFilter('all',      this)">전체</button>
             <button class="filter-btn f-work"     onclick="setFilter('work',     this)">💼 업무</button>
@@ -699,7 +739,7 @@
           <ul class="todo-list" id="todo-list"></ul>
 
           <div class="todo-foot">
-            <button class="btn-clear" id="btn-clear" onclick="clearDone()" disabled>완료 항목 삭제</button>
+            <button class="btn-clear" id="btn-clear" onclick="clearDone()" disabled style="display:none">완료 항목 전체 삭제</button>
             <span class="todo-count" id="todo-count">총 0개</span>
           </div>
         </div>
@@ -905,8 +945,10 @@
   let diarySearch  = ''
   let moodFilter   = ''
   let todoFilter   = 'all'
+  let todoView     = 'active'
   let editDiaryId  = null
   let editTodoId   = null
+  let editDueDate  = ''
   let selMood      = ''
   let userOverrode = false
   let dark         = false
@@ -1120,7 +1162,7 @@
 
     const DOW = ['일','월','화','수','목','금','토']
     const headers = DOW.map((d,i) =>
-      `<div class="cal-dh${i===0?' sun':i===6?' sat':''}">${d}</div>`
+      `<div class="cal-dh${i===0?' sun':i===6?' sat':''}">  ${d}</div>`
     ).join('')
 
     const cellsHtml = cells.map((c, i) => {
@@ -1389,21 +1431,21 @@
     todos = todos.filter(t => t.id !== id)
     renderTodoPage(); renderCalendar()
   }
-  function startEdit(id) {
-    editTodoId = id; renderTodoPage()
-    const inp = document.getElementById('ei-'+id)
-    if (inp) { inp.focus(); inp.select() }
+  function startEdit(id, due) {
+    editTodoId = id; editDueDate = due || ''; renderTodoPage()
   }
   async function commitEdit(id) {
-    const inp = document.getElementById('ei-'+id)
+    const inp  = document.getElementById('ei-'+id)
+    const dInp = document.getElementById('ed-'+id)
     const text = inp?.value.trim()
+    const due  = dInp?.value || null
     if (text) {
-      const { error } = await sb.from('todos').update({ text }).eq('id', id)
-      if (!error) todos = todos.map(t => t.id === id ? {...t, text} : t)
+      const { error } = await sb.from('todos').update({ text, due_date: due }).eq('id', id)
+      if (!error) todos = todos.map(t => t.id === id ? {...t, text, dueDate: due} : t)
     }
-    editTodoId = null; renderTodoPage()
+    editTodoId = null; editDueDate = ''; renderTodoPage()
   }
-  function cancelEdit() { editTodoId = null; renderTodoPage() }
+  function cancelEdit() { editTodoId = null; editDueDate = ''; renderTodoPage() }
   async function clearDone() {
     const ids = todos.filter(t => t.completed).map(t => t.id)
     if (!ids.length) return
@@ -1418,12 +1460,27 @@
     btn.classList.add('active')
     renderTodoPage()
   }
+  function sortActive(list) {
+    return [...list].sort((a, b) => {
+      const aH = !!a.dueDate, bH = !!b.dueDate
+      if (!aH && !bH) return a.createdAt - b.createdAt
+      if (!aH) return -1
+      if (!bH) return 1
+      return new Date(a.dueDate) - new Date(b.dueDate)
+    })
+  }
+  function setTodoView(v) {
+    todoView = v
+    document.getElementById('vt-active').classList.toggle('active', v === 'active')
+    document.getElementById('vt-completed').classList.toggle('active', v === 'completed')
+    renderTodoPage()
+  }
   function renderTodoPage() {
-    const filtered = todoFilter==='all' ? todos : todos.filter(t=>t.category===todoFilter)
-    const total    = todos.length
-    const done     = todos.filter(t=>t.completed).length
-    const pct      = total===0 ? 0 : Math.round(done/total*100)
-    const hasDone  = todos.some(t=>t.completed)
+    const activeTodos    = todos.filter(t => !t.completed)
+    const completedTodos = todos.filter(t => t.completed)
+    const total = todos.length
+    const done  = completedTodos.length
+    const pct   = total===0 ? 0 : Math.round(done/total*100)
 
     document.getElementById('prog-text').textContent = `${done} / ${total} 완료`
     document.getElementById('prog-pct').textContent  = `${pct}%`
@@ -1435,37 +1492,66 @@
       const ct = todos.filter(t=>t.category===cat)
       const cd = ct.filter(t=>t.completed).length
       const cp = ct.length===0 ? 0 : Math.round(cd/ct.length*100)
-      document.getElementById('cf-'+cat).style.width   = cp + '%'
-      document.getElementById('cc-'+cat).textContent   = ct.length===0 ? '항목 없음' : `${cd}/${ct.length}`
+      document.getElementById('cf-'+cat).style.width = cp + '%'
+      document.getElementById('cc-'+cat).textContent = ct.length===0 ? '항목 없음' : `${cd}/${ct.length}`
     })
 
-    document.getElementById('todo-count').textContent = (todoFilter==='all' ? '총' : CAT_LABEL[todoFilter]) + ` ${filtered.length}개`
-    document.getElementById('btn-clear').disabled = !hasDone
+    // 뷰 탭 카운트 업데이트
+    document.getElementById('vt-cnt-active').textContent    = activeTodos.length
+    document.getElementById('vt-cnt-completed').textContent = completedTodos.length
+
+    // 현재 뷰에 따른 목록 선택 및 정렬
+    let base = todoView === 'active' ? activeTodos : completedTodos
+    const filtered = todoFilter === 'all' ? base : base.filter(t => t.category === todoFilter)
+    const sorted   = todoView === 'active' ? sortActive(filtered) : filtered
+
+    document.getElementById('todo-count').textContent = (todoFilter==='all' ? '총' : CAT_LABEL[todoFilter]) + ` ${sorted.length}개`
+
+    const clearBtn = document.getElementById('btn-clear')
+    clearBtn.style.display = todoView === 'completed' ? '' : 'none'
+    clearBtn.disabled = completedTodos.length === 0
 
     const list = document.getElementById('todo-list')
-    if (!filtered.length) {
-      list.innerHTML = '<li class="todo-empty">할 일이 없습니다. 새 항목을 추가해보세요!</li>'
+    if (!sorted.length) {
+      list.innerHTML = todoView === 'active'
+        ? '<li class="todo-empty">할 일이 없습니다. 새 항목을 추가해보세요!</li>'
+        : '<li class="todo-empty">완료된 항목이 없습니다.</li>'
       return
     }
-    list.innerHTML = filtered.map(t => {
+    list.innerHTML = sorted.map(t => {
       const due = fmtDue(t.dueDate)
       return `
         <li class="todo-item${t.completed?' done':''}">
           <input type="checkbox" class="todo-chk" ${t.completed?'checked':''} onchange="toggleTodo('${t.id}')">
           <div class="item-body">
             ${editTodoId===t.id
-              ? `<input id="ei-${t.id}" class="item-edit-inp" value="${esc(t.text)}"
-                   onkeydown="if(event.key==='Enter')commitEdit('${t.id}');if(event.key==='Escape')cancelEdit()"
-                   onblur="commitEdit('${t.id}')">`
-              : `<span class="item-text">${esc(t.text)}</span>`
+              ? `<div class="edit-wrap">
+                   <input id="ei-${t.id}" class="item-edit-inp" value="${esc(t.text)}"
+                     onkeydown="if(event.key==='Escape')cancelEdit()">
+                   <div class="edit-due-row">
+                     <span class="edit-due-lbl">마감일</span>
+                     <input type="date" id="ed-${t.id}" class="edit-due-inp" value="${t.dueDate||''}">
+                     <button class="edit-due-clr" onclick="document.getElementById('ed-${t.id}').value=''">×</button>
+                   </div>
+                   <div class="edit-actions">
+                     <button class="edit-save-btn" onclick="commitEdit('${t.id}')">저장</button>
+                     <button class="edit-cancel-btn" onclick="cancelEdit()">취소</button>
+                   </div>
+                 </div>`
+              : `<span class="item-text">${esc(t.text)}</span>
+                 ${due ? `<span class="due-badge ${due.cls}">📅 ${due.text}</span>` : ''}`
             }
-            ${due ? `<span class="due-badge ${due.cls}">📅 ${due.text}</span>` : ''}
           </div>
+          ${editTodoId!==t.id ? `
           <span class="item-badge c-${t.category}">${CAT_LABEL[t.category]}</span>
-          <button class="btn-edit" onclick="startEdit('${t.id}')">수정</button>
-          <button class="btn-del"  onclick="delTodo('${t.id}')">🗑</button>
+          <button class="btn-edit" onclick="startEdit('${t.id}','${t.dueDate||''}')">수정</button>
+          <button class="btn-del"  onclick="delTodo('${t.id}')">🗑</button>` : ''}
         </li>`
     }).join('')
+    if (editTodoId) {
+      const inp = document.getElementById('ei-'+editTodoId)
+      if (inp) { inp.focus(); inp.select() }
+    }
   }
 
   // ── KEYWORD MODAL ──────────────────────────────────────────────────────
