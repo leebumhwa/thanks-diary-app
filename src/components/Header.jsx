@@ -9,7 +9,7 @@ export default function Header({ onPinSettings, currentTab, onTabChange }) {
     <header className="app-header">
       <div className="header-left">
         <span className="header-logo">📔</span>
-        <h1 className="header-title">감사 일기</h1>
+        <h1 className="header-title">하루노트</h1>
       </div>
 
       <nav className="header-tabs">

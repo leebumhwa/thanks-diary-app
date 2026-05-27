@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=1280">
-  <title>감사 일기 — 데스크톱</title>
+  <title>하루노트 — 데스크톱</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <style>
     /* ── Auth Overlay ── */
@@ -592,7 +592,7 @@
 <div class="auth-overlay" id="auth-overlay">
   <div class="auth-card">
     <div class="auth-logo">📔</div>
-    <div class="auth-title">감사 일기</div>
+    <div class="auth-title">하루노트</div>
     <div class="auth-sub">매일의 감사함을 기록하세요</div>
     <div class="auth-tabs">
       <button class="auth-tab active" id="tab-login" onclick="showAuthTab('login')">로그인</button>
@@ -619,7 +619,7 @@
   <aside class="sidebar">
     <div class="sb-brand">
       <span class="sb-logo">📔</span>
-      <h1 class="sb-title">감사 일기</h1>
+      <h1 class="sb-title">하루노트</h1>
     </div>
 
     <nav class="sb-nav">
@@ -675,7 +675,7 @@
     <section id="page-diary" class="page active">
       <div class="page-hd">
         <div class="page-hd-left">
-          <h2 class="page-title">나의 감사 일기</h2>
+          <h2 class="page-title">나의 하루노트</h2>
           <span class="page-sub" id="diary-sub">0개의 일기</span>
         </div>
         <div class="page-toolbar">
@@ -1162,7 +1162,7 @@
 
     const DOW = ['일','월','화','수','목','금','토']
     const headers = DOW.map((d,i) =>
-      `<div class="cal-dh${i===0?' sun':i===6?' sat':''}">  ${d}</div>`
+      `<div class="cal-dh${i===0?' sun':i===6?' sat':''}">` + d + `</div>`
     ).join('')
 
     const cellsHtml = cells.map((c, i) => {

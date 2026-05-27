@@ -12,7 +12,7 @@ export default function App() {
     return (
       <div className="splash">
         <div className="splash-logo">📔</div>
-        <p>감사 일기</p>
+        <p>하루노트</p>
       </div>
     )
   }

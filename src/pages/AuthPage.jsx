@@ -35,7 +35,7 @@ export default function AuthPage() {
     <div className="auth-container">
       <div className="auth-card">
         <div className="auth-logo">📔</div>
-        <h1 className="auth-title">감사 일기</h1>
+        <h1 className="auth-title">하루노트</h1>
         <p className="auth-subtitle">매일 감사한 일을 기록하세요</p>
 
         <form onSubmit={handle} className="auth-form">
