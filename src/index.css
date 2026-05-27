@@ -439,3 +439,119 @@ input, textarea, select { font: inherit }
 .todo-clear-btn:hover:not(:disabled) { border-color: #EF4444; color: #EF4444; background: #FEE2E2 }
 .todo-clear-btn:disabled { opacity: 0.4; cursor: not-allowed }
 .todo-total-count { font-size: 13px; color: var(--text3); font-weight: 500 }
+
+/* Due date row in add form */
+.todo-due-row {
+  display: flex; align-items: center; gap: 8px; margin-top: 10px; flex-wrap: wrap;
+}
+.todo-due-label { font-size: 12px; color: var(--text3); white-space: nowrap }
+.todo-due-input {
+  padding: 6px 10px; border: 1.5px solid var(--border); border-radius: 8px;
+  background: var(--bg3); color: var(--text); font-size: 13px; outline: none;
+  transition: border-color 0.2s;
+}
+.todo-due-input:focus { border-color: var(--todo-work) }
+.todo-due-clear {
+  font-size: 16px; color: var(--text3); line-height: 1; padding: 2px 4px; border-radius: 4px;
+  transition: color 0.15s;
+}
+.todo-due-clear:hover { color: #EF4444 }
+
+/* View tabs (할 일 / 완료) */
+.todo-view-tabs {
+  display: flex; gap: 0; border-radius: 12px; overflow: hidden;
+  border: 1.5px solid var(--border); background: var(--bg3);
+}
+.todo-view-btn {
+  flex: 1; padding: 9px 0; font-size: 14px; font-weight: 600;
+  color: var(--text3); transition: all 0.2s; display: flex;
+  align-items: center; justify-content: center; gap: 6px;
+}
+.todo-view-btn.active { background: var(--primary); color: #fff }
+.todo-view-count {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 20px; height: 20px; padding: 0 5px; border-radius: 999px;
+  font-size: 11px; font-weight: 700;
+  background: rgba(255,255,255,0.25); color: inherit;
+}
+.todo-view-btn:not(.active) .todo-view-count {
+  background: var(--border); color: var(--text3);
+}
+
+/* Todo item body + edit area */
+.todo-item { align-items: flex-start }
+.todo-item-body { flex: 1; display: flex; flex-direction: column; gap: 4px; min-width: 0 }
+.todo-item-actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0 }
+.todo-due-badge {
+  font-size: 11px; color: var(--text3); font-weight: 500;
+}
+.todo-due-badge.urgent { color: #EF4444; font-weight: 700 }
+
+/* Edit mode */
+.todo-edit-wrap { display: flex; flex-direction: column; gap: 6px; width: 100% }
+.todo-edit-due-row {
+  display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+}
+.todo-edit-due-label { font-size: 12px; color: var(--text3); white-space: nowrap }
+.todo-edit-due-input {
+  padding: 5px 8px; border: 1.5px solid var(--border); border-radius: 8px;
+  background: var(--bg3); color: var(--text); font-size: 12px; outline: none;
+  transition: border-color 0.2s;
+}
+.todo-edit-due-input:focus { border-color: var(--todo-work) }
+.todo-edit-due-clear {
+  font-size: 15px; color: var(--text3); padding: 1px 4px; border-radius: 4px;
+  transition: color 0.15s;
+}
+.todo-edit-due-clear:hover { color: #EF4444 }
+.todo-edit-actions { display: flex; gap: 6px }
+.todo-btn-save {
+  padding: 5px 12px; border-radius: 8px; font-size: 12px; font-weight: 700;
+  background: var(--primary); color: #fff; transition: opacity 0.15s;
+}
+.todo-btn-save:hover { opacity: 0.85 }
+.todo-btn-cancel {
+  padding: 5px 12px; border: 1.5px solid var(--border); border-radius: 8px;
+  font-size: 12px; font-weight: 600; color: var(--text3); transition: all 0.2s;
+}
+.todo-btn-cancel:hover { border-color: #EF4444; color: #EF4444 }
+
+/* Keyword settings link */
+.todo-kw-link {
+  display: block; margin-top: 10px; font-size: 12px; color: var(--text3);
+  text-align: right; transition: color 0.15s;
+}
+.todo-kw-link:hover { color: var(--primary) }
+
+/* Keyword modal */
+.kw-modal { max-width: 460px }
+.kw-modal-body { padding: 16px 24px 24px; display: flex; flex-direction: column; gap: 20px }
+.kw-section { display: flex; flex-direction: column; gap: 10px }
+.kw-section-header { display: flex; align-items: center; gap: 10px }
+.kw-default-count { font-size: 11px; color: var(--text3) }
+.kw-chips { display: flex; flex-wrap: wrap; gap: 6px }
+.kw-chip {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 8px 3px 10px; background: var(--primary); color: #fff;
+  border-radius: 999px; font-size: 12px; font-weight: 600;
+}
+.kw-chip-del {
+  font-size: 14px; line-height: 1; opacity: 0.75; transition: opacity 0.15s;
+  padding: 0 2px;
+}
+.kw-chip-del:hover { opacity: 1 }
+.kw-add-row { display: flex; gap: 8px }
+.kw-add-input {
+  flex: 1; padding: 8px 12px; border: 1.5px solid var(--border); border-radius: 8px;
+  background: var(--bg3); color: var(--text); font-size: 13px; outline: none;
+  transition: border-color 0.2s;
+}
+.kw-add-input:focus { border-color: var(--primary) }
+.kw-add-btn {
+  padding: 8px 14px; border-radius: 8px; font-size: 13px; font-weight: 700;
+  color: #fff; transition: opacity 0.15s; white-space: nowrap;
+}
+.kw-add-btn:hover { opacity: 0.85 }
+.kw-add-work     { background: var(--todo-work) }
+.kw-add-personal { background: var(--todo-personal) }
+.kw-add-study    { background: var(--todo-study) }

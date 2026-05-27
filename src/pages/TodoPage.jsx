@@ -46,8 +46,35 @@ function dbToTodo(r) {
     text: r.text,
     category: r.category,
     completed: r.completed,
+    dueDate: r.due_date || null,
     createdAt: new Date(r.created_at).getTime(),
   }
+}
+
+function formatDueDate(dateStr) {
+  if (!dateStr) return null
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  const due = new Date(dateStr)
+  due.setHours(0, 0, 0, 0)
+  const diff = Math.round((due - today) / (1000 * 60 * 60 * 24))
+  const label = due.toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' })
+  if (diff < 0) return { label, tag: `${Math.abs(diff)}일 지남`, urgent: true }
+  if (diff === 0) return { label, tag: '오늘 마감', urgent: true }
+  if (diff === 1) return { label, tag: '내일 마감', urgent: true }
+  if (diff <= 3) return { label, tag: `D-${diff}`, urgent: true }
+  return { label, tag: `D-${diff}`, urgent: false }
+}
+
+function sortActiveTodos(todos) {
+  return [...todos].sort((a, b) => {
+    const aHas = !!a.dueDate
+    const bHas = !!b.dueDate
+    if (!aHas && !bHas) return a.createdAt - b.createdAt
+    if (!aHas) return -1
+    if (!bHas) return 1
+    return new Date(a.dueDate) - new Date(b.dueDate)
+  })
 }
 
 export default function TodoPage() {
@@ -55,10 +82,13 @@ export default function TodoPage() {
   const [todos, setTodos] = useState([])
   const [loading, setLoading] = useState(true)
   const [input, setInput] = useState('')
+  const [dueDate, setDueDate] = useState('')
   const [category, setCategory] = useState('work')
   const [filter, setFilter] = useState('all')
+  const [todoView, setTodoView] = useState('active')
   const [editId, setEditId] = useState(null)
   const [editText, setEditText] = useState('')
+  const [editDueDate, setEditDueDate] = useState('')
   const [shake, setShake] = useState(false)
   const [autoDetected, setAutoDetected] = useState(false)
   const [userOverrode, setUserOverrode] = useState(false)
@@ -94,12 +124,19 @@ export default function TodoPage() {
     if (!input.trim()) { triggerShake(); return }
     const { data, error } = await supabase
       .from('todos')
-      .insert({ user_id: user.id, text: input.trim(), category, completed: false })
+      .insert({
+        user_id: user.id,
+        text: input.trim(),
+        category,
+        completed: false,
+        due_date: dueDate || null,
+      })
       .select()
       .single()
     if (error) { alert('추가 실패: ' + error.message); return }
     setTodos(prev => [...prev, dbToTodo(data)])
     setInput('')
+    setDueDate('')
     setAutoDetected(false)
     setUserOverrode(false)
     inputRef.current?.focus()
@@ -127,20 +164,32 @@ export default function TodoPage() {
   const startEdit = (todo) => {
     setEditId(todo.id)
     setEditText(todo.text)
+    setEditDueDate(todo.dueDate || '')
   }
 
   const commitEdit = async () => {
     if (editText.trim() && editId) {
-      const { error } = await supabase.from('todos').update({ text: editText.trim() }).eq('id', editId)
-      if (!error) setTodos(prev => prev.map(t => t.id === editId ? { ...t, text: editText.trim() } : t))
+      const { error } = await supabase
+        .from('todos')
+        .update({ text: editText.trim(), due_date: editDueDate || null })
+        .eq('id', editId)
+      if (!error) {
+        setTodos(prev => prev.map(t =>
+          t.id === editId
+            ? { ...t, text: editText.trim(), dueDate: editDueDate || null }
+            : t
+        ))
+      }
     }
     setEditId(null)
     setEditText('')
+    setEditDueDate('')
   }
 
   const cancelEdit = () => {
     setEditId(null)
     setEditText('')
+    setEditDueDate('')
   }
 
   const addKeyword = (cat) => {
@@ -156,17 +205,89 @@ export default function TodoPage() {
     setCustomKeywords(prev => ({ ...prev, [cat]: prev[cat].filter(k => k !== kw) }))
   }
 
-  const filtered = filter === 'all' ? todos : todos.filter(t => t.category === filter)
+  const activeTodos = todos.filter(t => !t.completed)
+  const completedTodos = todos.filter(t => t.completed)
+
+  const filteredActive = filter === 'all'
+    ? sortActiveTodos(activeTodos)
+    : sortActiveTodos(activeTodos.filter(t => t.category === filter))
+
+  const filteredCompleted = filter === 'all'
+    ? completedTodos
+    : completedTodos.filter(t => t.category === filter)
+
   const total = todos.length
-  const completedCount = todos.filter(t => t.completed).length
+  const completedCount = completedTodos.length
   const percentage = total === 0 ? 0 : Math.round(completedCount / total * 100)
-  const hasCompleted = todos.some(t => t.completed)
 
   const today = new Date().toLocaleDateString('ko-KR', {
     year: 'numeric', month: 'long', day: 'numeric', weekday: 'long',
   })
 
   if (loading) return <div style={{ textAlign: 'center', padding: '60px', color: '#718096' }}>불러오는 중...</div>
+
+  const renderTodoItem = (todo) => {
+    const due = formatDueDate(todo.dueDate)
+    return (
+      <li key={todo.id} className={`todo-item${todo.completed ? ' completed' : ''}`}>
+        <input
+          type="checkbox"
+          className="todo-checkbox"
+          checked={todo.completed}
+          onChange={() => toggleTodo(todo.id)}
+        />
+        <div className="todo-item-body">
+          {editId === todo.id ? (
+            <div className="todo-edit-wrap">
+              <input
+                type="text"
+                className="todo-edit-input"
+                value={editText}
+                autoFocus
+                onChange={e => setEditText(e.target.value)}
+                onKeyDown={e => {
+                  if (e.key === 'Enter') commitEdit()
+                  if (e.key === 'Escape') cancelEdit()
+                }}
+              />
+              <div className="todo-edit-due-row">
+                <label className="todo-edit-due-label">마감일</label>
+                <input
+                  type="date"
+                  className="todo-edit-due-input"
+                  value={editDueDate}
+                  onChange={e => setEditDueDate(e.target.value)}
+                />
+                {editDueDate && (
+                  <button className="todo-edit-due-clear" onClick={() => setEditDueDate('')}>×</button>
+                )}
+              </div>
+              <div className="todo-edit-actions">
+                <button className="todo-btn-save" onClick={commitEdit}>저장</button>
+                <button className="todo-btn-cancel" onClick={cancelEdit}>취소</button>
+              </div>
+            </div>
+          ) : (
+            <>
+              <span className="todo-text">{todo.text}</span>
+              {due && (
+                <span className={`todo-due-badge${due.urgent ? ' urgent' : ''}`}>
+                  📅 {due.label} · {due.tag}
+                </span>
+              )}
+            </>
+          )}
+        </div>
+        {editId !== todo.id && (
+          <div className="todo-item-actions">
+            <span className={`todo-badge todo-cat-${todo.category}`}>{CATEGORY_LABEL[todo.category]}</span>
+            <button className="todo-btn-edit" onClick={() => startEdit(todo)}>수정</button>
+            <button className="todo-btn-delete" onClick={() => deleteTodo(todo.id)}>🗑</button>
+          </div>
+        )}
+      </li>
+    )
+  }
 
   return (
     <div className="todo-page">
@@ -184,7 +305,6 @@ export default function TodoPage() {
           />
         </div>
 
-        {/* 카테고리별 미니 진행률 */}
         <div className="todo-cat-panel">
           {CATEGORIES.map(cat => {
             const catTodos = todos.filter(t => t.category === cat)
@@ -241,12 +361,40 @@ export default function TodoPage() {
           </div>
           <button className="todo-add-btn" onClick={addTodo}>+ 추가</button>
         </div>
+        <div className="todo-due-row">
+          <label className="todo-due-label">마감일 (선택)</label>
+          <input
+            type="date"
+            className="todo-due-input"
+            value={dueDate}
+            onChange={e => setDueDate(e.target.value)}
+          />
+          {dueDate && (
+            <button className="todo-due-clear" onClick={() => setDueDate('')}>×</button>
+          )}
+        </div>
         <button className="todo-kw-link" onClick={() => setShowKeywords(true)}>
           ⚙️ 자동 분류 키워드 설정
         </button>
       </div>
 
-      {/* 필터 탭 */}
+      {/* 뷰 탭 (할 일 / 완료) */}
+      <div className="todo-view-tabs">
+        <button
+          className={`todo-view-btn${todoView === 'active' ? ' active' : ''}`}
+          onClick={() => setTodoView('active')}
+        >
+          할 일 <span className="todo-view-count">{activeTodos.length}</span>
+        </button>
+        <button
+          className={`todo-view-btn${todoView === 'completed' ? ' active' : ''}`}
+          onClick={() => setTodoView('completed')}
+        >
+          완료 <span className="todo-view-count">{completedCount}</span>
+        </button>
+      </div>
+
+      {/* 카테고리 필터 탭 */}
       <div className="todo-filter-tabs">
         {[['all','전체'],['work','💼 업무'],['personal','🙋 개인'],['study','📚 공부']].map(([val, label]) => (
           <button
@@ -260,51 +408,47 @@ export default function TodoPage() {
       </div>
 
       {/* 할 일 목록 */}
-      <ul className="todo-list">
-        {filtered.length === 0 ? (
-          <li className="todo-empty">할 일이 없습니다. 새 항목을 추가해보세요!</li>
-        ) : (
-          filtered.map(todo => (
-            <li key={todo.id} className={`todo-item${todo.completed ? ' completed' : ''}`}>
-              <input
-                type="checkbox"
-                className="todo-checkbox"
-                checked={todo.completed}
-                onChange={() => toggleTodo(todo.id)}
-              />
-              {editId === todo.id ? (
-                <input
-                  type="text"
-                  className="todo-edit-input"
-                  value={editText}
-                  autoFocus
-                  onChange={e => setEditText(e.target.value)}
-                  onKeyDown={e => {
-                    if (e.key === 'Enter') commitEdit()
-                    if (e.key === 'Escape') cancelEdit()
-                  }}
-                  onBlur={commitEdit}
-                />
-              ) : (
-                <span className="todo-text">{todo.text}</span>
-              )}
-              <span className={`todo-badge todo-cat-${todo.category}`}>{CATEGORY_LABEL[todo.category]}</span>
-              <button className="todo-btn-edit" onClick={() => startEdit(todo)}>수정</button>
-              <button className="todo-btn-delete" onClick={() => deleteTodo(todo.id)}>🗑</button>
-            </li>
-          ))
-        )}
-      </ul>
+      {todoView === 'active' && (
+        <>
+          <ul className="todo-list">
+            {filteredActive.length === 0 ? (
+              <li className="todo-empty">할 일이 없습니다. 새 항목을 추가해보세요!</li>
+            ) : (
+              filteredActive.map(renderTodoItem)
+            )}
+          </ul>
+          <div className="todo-footer">
+            <span className="todo-total-count">
+              {filter === 'all' ? '총' : CATEGORY_LABEL[filter]} {filteredActive.length}개
+            </span>
+          </div>
+        </>
+      )}
 
-      {/* 하단 */}
-      <div className="todo-footer">
-        <button className="todo-clear-btn" onClick={clearCompleted} disabled={!hasCompleted}>
-          완료 항목 삭제
-        </button>
-        <span className="todo-total-count">
-          {filter === 'all' ? '총' : CATEGORY_LABEL[filter]} {filtered.length}개
-        </span>
-      </div>
+      {/* 완료 목록 */}
+      {todoView === 'completed' && (
+        <>
+          <ul className="todo-list">
+            {filteredCompleted.length === 0 ? (
+              <li className="todo-empty">완료된 항목이 없습니다.</li>
+            ) : (
+              filteredCompleted.map(renderTodoItem)
+            )}
+          </ul>
+          <div className="todo-footer">
+            <button
+              className="todo-clear-btn"
+              onClick={clearCompleted}
+              disabled={completedCount === 0}
+            >
+              완료 항목 전체 삭제
+            </button>
+            <span className="todo-total-count">
+              {filter === 'all' ? '총' : CATEGORY_LABEL[filter]} {filteredCompleted.length}개
+            </span>
+          </div>
+        </>
+      )}
 
       {/* 키워드 설정 모달 */}
       {showKeywords && (
